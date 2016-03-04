@@ -2,6 +2,8 @@
 
 namespace graphics{
 
+	SDL_Window* window=NULL;
+	SDL_Surface* screenSurface=NULL;
 	int create(){
 
 		if(SDL_Init(SDL_INIT_VIDEO) < 0){
@@ -9,7 +11,7 @@ namespace graphics{
 			return -1;
 		}
 
-		window = SDL_CreateWindow(TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+		window = SDL_CreateWindow(WINDOW_TITLE, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
 				SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 
 		if(window == NULL){
