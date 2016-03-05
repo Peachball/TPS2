@@ -3,11 +3,13 @@
 #include "Graphics.h"
 
 int main(){
-	std::cout<<"Hello world\n";
-
 	graphics::create();
 
 	graphics::clear();
+
+	SDL_Surface* z = graphics::loadImage("bigcircle.png");
+
+	SDL_BlitSurface(z, NULL, graphics::screenSurface, NULL);
 
 	graphics::update();
 	
