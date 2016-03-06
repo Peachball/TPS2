@@ -1,19 +1,16 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "Graphics.h"
+#include "StartScreen.h"
 
 int main(){
 	graphics::create();
 
-	graphics::clear();
+	Screen* scr = new StartScreen();
 
-	SDL_Surface* z = graphics::loadImage("bigcircle.png");
-
-	SDL_BlitSurface(z, NULL, graphics::screenSurface, NULL);
-
-	graphics::update();
-	
-	SDL_Delay(2000);
+	while( scr != NULL ){
+		scr = scr->update();
+	}
 
 	graphics::close();
 

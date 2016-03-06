@@ -15,10 +15,13 @@ namespace graphics{
 	void update();
 	void close();
 	SDL_Surface* loadImage(const char* source);
+	SDL_Texture* loadTexture(const char* source);
 	void closeSurface(SDL_Surface* surface);
+	void closeTexture(SDL_Texture* texture);
 
 	extern SDL_Window* window;
 	extern SDL_Surface* screenSurface;
+	extern SDL_Renderer* render;
 }
 
 #endif

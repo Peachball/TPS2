@@ -4,6 +4,5 @@
 
 class Screen{
 	public:
-		virtual Screen* update();
-		virtual ~Screen();
+		virtual Screen* update()=0;
 };

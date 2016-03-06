@@ -3,6 +3,13 @@
 StartScreen::StartScreen(){
 }
 
-StartScreen::loadImages(){
+void StartScreen::loadImages(){
 
+}
+
+Screen* StartScreen::update(){
+	return NULL;
+}
+
+StartScreen::~StartScreen(){
 }
