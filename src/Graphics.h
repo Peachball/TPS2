@@ -22,6 +22,8 @@ namespace graphics{
 	extern SDL_Window* window;
 	extern SDL_Surface* screenSurface;
 	extern SDL_Renderer* render;
+
+	void logError();
 }
 
 #endif

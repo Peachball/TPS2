@@ -9,8 +9,13 @@ int main(){
 
 	Screen* scr = new GameScreen(TESTER);
 
+	Screen* before = scr;
 	while( scr != NULL ){
 		scr = scr->update();
+		if(before != scr){
+			delete before;
+		}
+		before = scr;
 	}
 
 	graphics::close();

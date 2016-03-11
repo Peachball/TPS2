@@ -1,10 +1,16 @@
 #pragma once
 #include <iostream>
+#include "GameObject.h"
+#include "Player.h"
+#include <vector>
 
 class GameManager{
 	public:
-		GameManger();
+		GameManager();
+		~GameManager();
 
-		~GameManger();
+		void startGame();
+		void endGame();
 	private:
+		std::vector<GameObject*> objects;
 };

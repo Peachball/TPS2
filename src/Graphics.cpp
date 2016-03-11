@@ -114,4 +114,8 @@ namespace graphics{
 		return texture;
 	}
 
+	void logError(){
+		std::cout<<"SDL Error: "<< SDL_GetError()<<'\n';
+	}
+
 }
