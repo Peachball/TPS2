@@ -1,4 +1,5 @@
 #pragma once
+#include "GameManager.h"
 #include "Screen.h"
 
 enum GAMEMODE{
@@ -14,5 +15,6 @@ class GameScreen: public Screen{
 		~GameScreen();
 
 	private:
+		GameManger manager;
 		GAMEMODE gm;
 };

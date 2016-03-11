@@ -7,7 +7,7 @@ const std::string DEFAULT_NAME="player-topdown.png";
 
 class Player : public GameObject{
 	public:
-		Player();
+		Player(float x=0, float y=0);
 		virtual void display();
 		~Player();
 	private:

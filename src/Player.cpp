@@ -1,7 +1,9 @@
 #include "Player.h"
 
-Player::Player(){
+Player::Player(float x, float y){
 	image = graphics::loadTexture(DEFAULT_NAME.c_str());
+	xpos = x;
+	ypos = y;
 }
 
 void Player::display(){

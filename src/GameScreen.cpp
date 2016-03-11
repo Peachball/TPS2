@@ -2,6 +2,7 @@
 
 GameScreen::GameScreen(GAMEMODE mode){
 	gm = mode;
+	manager.startGame();
 }
 
 Screen* GameScreen::update(){
@@ -13,7 +14,7 @@ Screen* GameScreen::update(){
 		case TESTER:
 			break;
 	}
-	return NULL;
+	return this;
 }
 
 GameScreen::~GameScreen(){
