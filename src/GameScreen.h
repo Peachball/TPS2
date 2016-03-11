@@ -3,7 +3,8 @@
 
 enum GAMEMODE{
 	SINGLEPLAYER,
-	MULTIPLAYER
+	MULTIPLAYER,
+	TESTER
 };
 
 class GameScreen: public Screen{
@@ -11,4 +12,7 @@ class GameScreen: public Screen{
 		GameScreen(GAMEMODE mode);
 		virtual Screen* update();
 		~GameScreen();
+
+	private:
+		GAMEMODE gm;
 };
