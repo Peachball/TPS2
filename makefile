@@ -1,17 +1,21 @@
 BUILD=./build/
-OBJS = $(wildcard src/*.cpp)
+INCLUDE_PATHS = -Isrc/
 
 APP_NAME = Test
 
 CC = g++
-WINDOWSCC = i686-w64-mingw32-g++
 
-COMPILER_FLAGS = -w -std=c++11
+COMPILER_FLAGS = -w -std=c++11 $(INLCUDE_PATHS)
+
+GAME_OBJS = $(wildcard src/game/*.cpp)
+GUI_OBJS = $(wildcard src/gui/*.cpp)
+
+OBJS = $(wildcard src/*.cpp) $(GAME_OBJS) $(GUI_OBJS)
 
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 
 all : $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(BUILD)$(APP_NAME)
+	$(CC) $(OBJS) $(COMPILER_FLAGS) $(LINKER_FLAGS) $(INCLUDE_PATHS) -o $(BUILD)$(APP_NAME)
 
 clean:
 	find . -type f -iname \*.swp -delete

@@ -15,6 +15,6 @@ class GameScreen: public Screen{
 		~GameScreen();
 
 	private:
-		GameManger manager;
+		GameManager manager;
 		GAMEMODE gm;
 };

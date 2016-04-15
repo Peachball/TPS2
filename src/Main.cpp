@@ -1,7 +1,7 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include "Graphics.h"
-#include "GameScreen.h"
+#include "game/GameScreen.h"
 #include "StartScreen.h"
 
 int main(){
