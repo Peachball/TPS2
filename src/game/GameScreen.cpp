@@ -2,7 +2,7 @@
 
 GameScreen::GameScreen(GAMEMODE mode){
 	gm = mode;
-	this->manager.startGame();
+	manager.startGame();
 }
 
 Screen* GameScreen::update(){
