@@ -14,5 +14,5 @@ void Player::display(){
 }
 
 Player::~Player(){
-	graphics::closeTexture(image);
+	graphics::close(image);
 }

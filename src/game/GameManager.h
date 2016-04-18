@@ -7,6 +7,13 @@
 
 class GameManager{
 	public:
+		enum State{
+			BEFORE,
+			DURING,
+			PAUSED,
+			END
+		};
+
 		GameManager();
 		~GameManager();
 

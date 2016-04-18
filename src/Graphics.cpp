@@ -65,12 +65,12 @@ namespace graphics{
 		SDL_Quit();
 	}
 
-	void closeSurface(SDL_Surface* surface){
+	void close(SDL_Surface* surface){
 		SDL_FreeSurface(surface);
 		surface = NULL;
 	}
 
-	void closeTexture(SDL_Texture* texture){
+	void close(SDL_Texture* texture){
 		SDL_DestroyTexture(texture);
 		texture = NULL;
 	}
@@ -90,7 +90,7 @@ namespace graphics{
 		}
 		else{
 			optimized = SDL_ConvertSurface(target, screenSurface->format, NULL);
-			closeSurface(target);
+			close(target);
 			if(optimized == NULL){
 				std::cout<<"Failed to convert surface. Error: "<<SDL_GetError()<<'\n';
 			}
@@ -105,7 +105,7 @@ namespace graphics{
 		}
 		SDL_Surface* optimizedSurface = loadImage(source);
 		SDL_Texture* texture = SDL_CreateTextureFromSurface(render, optimizedSurface);
-		closeSurface(optimizedSurface);
+		close(optimizedSurface);
 
 		if(texture == NULL){
 			std::cout<<"Unable to load texture\n";

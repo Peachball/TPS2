@@ -29,5 +29,5 @@ void Button::processEvent(const SDL_Event* event){
 }
 
 Button::~Button(){
-	closeTexture(image);
+	close(image);
 }

@@ -3,8 +3,8 @@
 
 GameManager::GameManager(){
 	//Default settings here
-	Player * p = new Player();
-	objects.push_back(p);
+//	Player* p = new Player();
+//	objects.push_back(p);
 }
 
 GameManager::~GameManager(){
@@ -16,12 +16,21 @@ GameManager::~GameManager(){
 }
 
 void GameManager::startGame(){
-	std::thread(renderloop);
+
+	//Debugging purposes only currently
+	std::thread r(&GameManager::renderloop, this);
 	SDL_Delay(1000);
+	status = GameManager::State::DURING;
+
+	r.join();
 }
 
+/*
+ * Display Current state
+*/
 void GameManager::renderloop(){
-	while(status = 1){
+	std::cout<<"Size of render loop "<<objects.size()<<'\n';
+	while(status == GameManager::State::DURING){
 		for(std::vector<GameObject*>::iterator it=objects.begin(); it != objects.end(); ++it){
 			(*it)->display();
 		}
