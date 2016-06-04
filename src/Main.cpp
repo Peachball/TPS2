@@ -3,11 +3,14 @@
 #include "Graphics.h"
 #include "game/GameScreen.h"
 #include "StartScreen.h"
+#include "GUIHandler.h"
 
 int main(){
 	graphics::create();
 
 	Screen* scr = new GameScreen(TESTER);
+
+	GUIHandler gui;
 
 	Screen* before = scr;
 	while( scr != NULL ){

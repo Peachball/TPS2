@@ -4,9 +4,15 @@
 
 class GUIHandler{
 	public:
+		enum ListenState{
+			DELETE,
+			SAME
+		};
+
 		void start();
 		void stop();
 		~GUIHandler();
+		void addEventListener();
 
 	private:
 		SDL_Event **events;
