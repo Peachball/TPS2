@@ -5,7 +5,7 @@ APP_NAME = Test
 
 CC = g++
 
-COMPILER_FLAGS = -w -std=c++11 $(INLCUDE_PATHS)
+COMPILER_FLAGS = -w -std=c++11 $(INLCUDE_PATHS) -g
 
 GAME_OBJS = $(wildcard src/game/*.cpp)
 GUI_OBJS = $(wildcard src/gui/*.cpp)
