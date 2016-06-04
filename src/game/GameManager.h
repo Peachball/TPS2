@@ -24,4 +24,5 @@ class GameManager{
 	private:
 		std::vector<GameObject*> objects;
 		void renderloop();
+		void eventHandler();
 };

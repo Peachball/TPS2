@@ -18,13 +18,32 @@ GameManager::~GameManager(){
 void GameManager::startGame(){
 
 	//Debugging purposes only currently
-	std::thread r(&GameManager::renderloop, this);
-	SDL_Delay(1000);
 	status = GameManager::State::DURING;
+	std::thread r(&GameManager::renderloop, this);
+	std::thread event(&GameManager::eventHandler, this);
+	SDL_Delay(1000);
 
+	status == GameManager::State::END;
 	r.join();
 }
 
+void GameManager::eventHandler(){
+	SDL_Event event;
+	std::cout<<"Polling events\n";
+	while(status != GameManager::State::END){
+		while(SDL_PollEvent(&event)){
+			switch(event.type){
+				case SDL_WINDOWEVENT:
+					switch(event.window.event){
+						case SDL_WINDOWEVENT_CLOSE:
+							status = GameManager::State::END;
+							break;
+					}
+					break;
+			}
+		}
+	}
+}
 /*
  * Display Current state
 */
