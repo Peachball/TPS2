@@ -3,7 +3,7 @@
 #include "Graphics.h"
 #include "game/GameScreen.h"
 #include "StartScreen.h"
-#include "GUIHandler.h"
+#include "gui/GUIHandler.h"
 
 int main(){
 	graphics::create();
