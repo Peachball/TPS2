@@ -6,4 +6,6 @@ class GameObject{
 		virtual void display()=0;
 		float xpos;
 		float ypos;
+		
+		virtual ~GameObject(){};
 };

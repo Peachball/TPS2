@@ -12,7 +12,7 @@ class GameScreen: public Screen{
 	public:
 		GameScreen(GAMEMODE mode);
 		virtual Screen* update();
-		~GameScreen();
+		virtual ~GameScreen();
 
 	private:
 		GameManager manager;

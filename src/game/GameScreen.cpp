@@ -21,4 +21,5 @@ Screen* GameScreen::update(){
 }
 
 GameScreen::~GameScreen(){
+	std::cout<<"gamescreen destructor called\n";
 }

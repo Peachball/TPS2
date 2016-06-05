@@ -3,8 +3,8 @@
 
 GameManager::GameManager(){
 	//Default settings here
-//	Player* p = new Player();
-//	objects.push_back(p);
+	Player* p = new Player();
+	objects.push_back(p);
 }
 
 GameManager::~GameManager(){
@@ -13,6 +13,18 @@ GameManager::~GameManager(){
 		delete o;
 		objects.pop_back();
 	}
+
+	if(renderThread != NULL){
+		delete renderThread;
+	}
+	if(eventThread != NULL){
+		delete eventThread;
+	}
+	if(gameThread != NULL){
+		delete gameThread;
+	}
+
+	renderThread = gameThread = eventThread = NULL;
 }
 
 void GameManager::startGame(){
@@ -21,15 +33,37 @@ void GameManager::startGame(){
 
 	//Debugging purposes only currently
 	status = GameManager::State::DURING;
-	std::thread r(&GameManager::renderloop, this);
-	std::thread event(&GameManager::eventHandler, this);
-	SDL_Delay(1);
 
-	status = GameManager::State::END;
-	r.join();
-	event.join();
+	renderThread = new std::thread(&GameManager::renderloop, this);
+	eventThread  = new std::thread(&GameManager::eventHandler, this);
+	gameThread   = new std::thread(&GameManager::manageGame, this);
+
+
+	//Game has started, and this is just debugging stuff
+	SDL_Delay(1000);
+	endGame();
 
 	std::cout<<"Exited game\n";
+}
+
+void GameManager::endGame(){
+	status = GameManager::State::END;
+
+	renderThread->join();
+	eventThread->join();
+	gameThread->join();
+
+	std::cout<<"game ended successfully\n";
+}
+
+//Do all the game logic stuff here such as:
+//	Get rid of dead people
+//	Collision detection
+//	Manage game status
+void GameManager::manageGame(){
+	while(status != GameManager::State::END){
+	}
+
 }
 
 void GameManager::eventHandler(){
@@ -48,6 +82,8 @@ void GameManager::eventHandler(){
 			}
 		}
 	}
+
+	std::cout<<"Stopped polling events\n";
 }
 /*
  * Display Current state
@@ -56,10 +92,12 @@ void GameManager::renderloop(){
 	std::cout<<"Size of render loop "<<objects.size()<<'\n';
 	graphics::clear();
 	while(status == GameManager::State::DURING){
+		graphics::clear();
 		for(std::vector<GameObject*>::iterator it=objects.begin();
 				it != objects.end(); ++it){
 			(*it)->display();
 		}
+		graphics::update();
 	}
 	std::cout<<"Exited rendering loop\n";
 }

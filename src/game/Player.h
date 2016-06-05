@@ -10,6 +10,7 @@ class Player : public GameObject{
 		Player(float x=0, float y=0);
 		virtual void display();
 		~Player();
+
 	private:
 		SDL_Texture *image;
 };

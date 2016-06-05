@@ -25,4 +25,9 @@ class GameManager{
 		std::vector<GameObject*> objects;
 		void renderloop();
 		void eventHandler();
+		void manageGame();
+
+		std::thread* renderThread;
+		std::thread* eventThread;
+		std::thread* gameThread;
 };

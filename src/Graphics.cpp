@@ -63,16 +63,11 @@ namespace graphics{
 	}
 
 	void closeSDL(){
-		std::cout<<"Trying to close\n";
-		std::cout<<window<<'\n';
 		SDL_DestroyWindow(window);
-		std::cout<<"\nQuitting\n";
-		std::cout<<render<<'\n';
 		SDL_DestroyRenderer(render);
 		window = NULL;
 
 		SDL_Quit();
-		std::cout<<"Success!\n";
 	}
 
 	void close(SDL_Surface* surface){

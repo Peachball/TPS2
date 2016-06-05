@@ -5,4 +5,5 @@
 class Screen{
 	public:
 		virtual Screen* update()=0;
+		virtual ~Screen(){};
 };
