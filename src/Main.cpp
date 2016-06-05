@@ -8,6 +8,8 @@
 int main(){
 	graphics::create();
 
+	std::cout<<"hello?\n";
+
 	Screen* scr = new GameScreen(TESTER);
 
 	GUIHandler gui;
@@ -22,7 +24,6 @@ int main(){
 	}
 
 	graphics::closeSDL();
-	std::cout<<"hello?\n";
 
 	return 0;
 }

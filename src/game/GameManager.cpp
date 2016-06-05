@@ -54,6 +54,7 @@ void GameManager::eventHandler(){
 */
 void GameManager::renderloop(){
 	std::cout<<"Size of render loop "<<objects.size()<<'\n';
+	graphics::clear();
 	while(status == GameManager::State::DURING){
 		for(std::vector<GameObject*>::iterator it=objects.begin();
 				it != objects.end(); ++it){

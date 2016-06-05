@@ -19,7 +19,7 @@ all : $(OBJS)
 		-o $(BUILD)$(APP_NAME)
 
 debug: $(OBJS)
-	$(CC) $(OBJS) $(COMPILER_FLAGS) -g $(LINKER_FLAGS) $(INCLUDE_PATHS) \
+	$(CC) $(OBJS) $(COMPILER_FLAGS) -g -O0 $(LINKER_FLAGS) $(INCLUDE_PATHS) \
 		-o $(BUILD)$(APP_NAME)
 
 clean:

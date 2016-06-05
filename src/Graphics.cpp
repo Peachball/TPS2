@@ -2,11 +2,12 @@
 
 namespace graphics{
 
-	//Initial values
 	SDL_Window* window         = NULL;
 	SDL_Surface* screenSurface = NULL;
 	SDL_Renderer* render       = NULL;
-	bool status                = false;
+
+	//Status: whether or not the sdl stuff is ready for drawing
+	bool status = false;
 
 	int create(){
 		status = true;
@@ -18,7 +19,7 @@ namespace graphics{
 		}
 
 		int flags = IMG_INIT_JPG|IMG_INIT_PNG;
-		if( (IMG_Init(flags) & flags) != flags){
+		if((IMG_Init(flags) & flags) != flags){
 			std::cout<<"Failed to load IMG correctly\n";
 			std::cout<<"Error: "<<IMG_GetError()<<'\n';
 			status = false;
@@ -34,12 +35,14 @@ namespace graphics{
 		}
 		screenSurface = SDL_GetWindowSurface(window);
 
-		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 		if(render == NULL){
 			std::cout<<"Failed to load sdl renderer\n";
 			std::cout<<"Error: "<<SDL_GetError()<<'\n';
 			status = false;
 		}
+
+		return !status;
 	}
 
 	void clear(){
@@ -60,6 +63,8 @@ namespace graphics{
 	}
 
 	void closeSDL(){
+		std::cout<<"Trying to close\n";
+		std::cout<<window<<'\n';
 		SDL_DestroyWindow(window);
 		std::cout<<"\nQuitting\n";
 		std::cout<<render<<'\n';
