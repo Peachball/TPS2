@@ -17,14 +17,19 @@ GameManager::~GameManager(){
 
 void GameManager::startGame(){
 
+	//Initalize debug mode stuff
+
 	//Debugging purposes only currently
 	status = GameManager::State::DURING;
 	std::thread r(&GameManager::renderloop, this);
 	std::thread event(&GameManager::eventHandler, this);
-	SDL_Delay(1000);
+	SDL_Delay(1);
 
-	status == GameManager::State::END;
+	status = GameManager::State::END;
 	r.join();
+	event.join();
+
+	std::cout<<"Exited game\n";
 }
 
 void GameManager::eventHandler(){
@@ -50,8 +55,10 @@ void GameManager::eventHandler(){
 void GameManager::renderloop(){
 	std::cout<<"Size of render loop "<<objects.size()<<'\n';
 	while(status == GameManager::State::DURING){
-		for(std::vector<GameObject*>::iterator it=objects.begin(); it != objects.end(); ++it){
+		for(std::vector<GameObject*>::iterator it=objects.begin();
+				it != objects.end(); ++it){
 			(*it)->display();
 		}
 	}
+	std::cout<<"Exited rendering loop\n";
 }

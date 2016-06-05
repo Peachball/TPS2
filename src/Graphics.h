@@ -4,16 +4,16 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-const char* const RESOURCE_DIR="res/";
-const char* const WINDOW_TITLE="TPS2";
-const int SCREEN_WIDTH= 800;
-const int SCREEN_HEIGHT = 800;
+static const char* const RESOURCE_DIR="res/";
+static const char* const WINDOW_TITLE="TPS2";
+static const int SCREEN_WIDTH= 1600;
+static const int SCREEN_HEIGHT = 900;
 
 namespace graphics{
 	int create();
 	void clear();
 	void update();
-	void close();
+	void closeSDL();
 	SDL_Surface* loadImage(const char* source);
 	SDL_Texture* loadTexture(const char* source);
 	void close(SDL_Surface* surface);

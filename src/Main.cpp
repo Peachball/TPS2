@@ -21,7 +21,8 @@ int main(){
 		before = scr;
 	}
 
-	graphics::close();
+	graphics::closeSDL();
+	std::cout<<"hello?\n";
 
 	return 0;
 }

@@ -14,6 +14,9 @@ Screen* GameScreen::update(){
 		case TESTER:
 			break;
 	}
+	if(manager.status == GameManager::State::END){
+		return NULL;
+	}
 	return this;
 }
 

@@ -2,10 +2,11 @@
 
 namespace graphics{
 
-	SDL_Window* window=NULL;
-	SDL_Surface* screenSurface=NULL;
-	SDL_Renderer* render=NULL;
-	bool status=false;
+	//Initial values
+	SDL_Window* window         = NULL;
+	SDL_Surface* screenSurface = NULL;
+	SDL_Renderer* render       = NULL;
+	bool status                = false;
 
 	int create(){
 		status = true;
@@ -58,11 +59,15 @@ namespace graphics{
 		SDL_UpdateWindowSurface(window);
 	}
 
-	void close(){
+	void closeSDL(){
 		SDL_DestroyWindow(window);
+		std::cout<<"\nQuitting\n";
+		std::cout<<render<<'\n';
 		SDL_DestroyRenderer(render);
 		window = NULL;
+
 		SDL_Quit();
+		std::cout<<"Success!\n";
 	}
 
 	void close(SDL_Surface* surface){

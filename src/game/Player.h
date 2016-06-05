@@ -3,7 +3,7 @@
 #include "Graphics.h"
 #include <SDL2/SDL.h>
 
-const std::string DEFAULT_NAME="player-topdown.png";
+static const std::string DEFAULT_NAME="player-topdown.png";
 
 class Player : public GameObject{
 	public:
