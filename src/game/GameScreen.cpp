@@ -15,11 +15,11 @@ Screen* GameScreen::update(){
 			break;
 	}
 	if(manager.status == GameManager::State::END){
+		manager.endGame();
 		return NULL;
 	}
 	return this;
 }
 
 GameScreen::~GameScreen(){
-	std::cout<<"gamescreen destructor called\n";
 }

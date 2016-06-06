@@ -9,8 +9,11 @@ class Player : public GameObject{
 	public:
 		Player(float x=0, float y=0);
 		virtual void display();
-		~Player();
+		virtual ~Player();
+		void getInput(const SDL_Event* event);
 
 	private:
 		SDL_Texture *image;
+		SDL_Rect src;
+		SDL_Rect dest;
 };

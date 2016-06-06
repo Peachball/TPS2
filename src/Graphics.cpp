@@ -71,13 +71,17 @@ namespace graphics{
 	}
 
 	void close(SDL_Surface* surface){
-		SDL_FreeSurface(surface);
-		surface = NULL;
+		if(surface != NULL){
+			SDL_FreeSurface(surface);
+			surface = NULL;
+		}
 	}
 
 	void close(SDL_Texture* texture){
-		SDL_DestroyTexture(texture);
-		texture = NULL;
+		if(texture != NULL){
+			SDL_DestroyTexture(texture);
+			texture = NULL;
+		}
 	}
 
 	SDL_Surface* loadImage(const char* source){

@@ -30,4 +30,6 @@ class GameManager{
 		std::thread* renderThread;
 		std::thread* eventThread;
 		std::thread* gameThread;
+
+		Player* localPlayer;
 };

@@ -4,6 +4,7 @@
 GameManager::GameManager(){
 	//Default settings here
 	Player* p = new Player();
+	localPlayer = p;
 	objects.push_back(p);
 }
 
@@ -38,12 +39,6 @@ void GameManager::startGame(){
 	eventThread  = new std::thread(&GameManager::eventHandler, this);
 	gameThread   = new std::thread(&GameManager::manageGame, this);
 
-
-	//Game has started, and this is just debugging stuff
-	SDL_Delay(1000);
-	endGame();
-
-	std::cout<<"Exited game\n";
 }
 
 void GameManager::endGame(){
@@ -53,7 +48,7 @@ void GameManager::endGame(){
 	eventThread->join();
 	gameThread->join();
 
-	std::cout<<"game ended successfully\n";
+	std::cout<<"Game ended successfully\n";
 }
 
 //Do all the game logic stuff here such as:
@@ -71,6 +66,8 @@ void GameManager::eventHandler(){
 	std::cout<<"Polling events\n";
 	while(status != GameManager::State::END){
 		while(SDL_PollEvent(&event)){
+			localPlayer->getInput(&event);
+
 			switch(event.type){
 				case SDL_WINDOWEVENT:
 					switch(event.window.event){
