@@ -16,4 +16,6 @@ class Player : public GameObject{
 		SDL_Texture *image;
 		SDL_Rect src;
 		SDL_Rect dest;
+
+		Uint8* keystate;
 };

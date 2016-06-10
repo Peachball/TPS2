@@ -9,6 +9,8 @@ static const char* const WINDOW_TITLE="TPS2";
 static const int SCREEN_WIDTH= 1600;
 static const int SCREEN_HEIGHT = 900;
 
+void logError(std::string s);
+
 namespace graphics{
 	int create();
 	void clear();

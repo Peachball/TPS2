@@ -1,5 +1,9 @@
 #include "Graphics.h"
 
+void logError(std::string s){
+	std::cout<<s<<'\n';
+}
+
 namespace graphics{
 
 	SDL_Window* window         = NULL;
@@ -126,5 +130,4 @@ namespace graphics{
 	void logError(){
 		std::cout<<"SDL Error: "<< SDL_GetError()<<'\n';
 	}
-
 }
