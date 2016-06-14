@@ -56,10 +56,11 @@ void GameManager::endGame(){
 //	Collision detection
 //	Manage game status
 void GameManager::manageGame(){
+	Uint32 lastTime= SDL_GetTicks();
 	while(status != GameManager::State::END){
 		for(int i = 0; i < objects.size(); i++){
 			GameObject* g = objects[i];
-			g->gameUpdate();
+			g->gameUpdate(SDL_GetTicks() - lastTime);
 		}
 	}
 

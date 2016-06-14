@@ -12,7 +12,7 @@ class Player : public GameObject{
 		virtual ~Player();
 		void getInput(const SDL_Event* event);
 
-		virtual void gameUpdate();
+		virtual void gameUpdate(float time);
 
 	private:
 		SDL_Texture *image;
@@ -23,4 +23,6 @@ class Player : public GameObject{
 
 		float xpos;
 		float ypos;
+
+		double movementSpeed = 0.000000004;
 };

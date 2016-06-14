@@ -74,8 +74,17 @@ Player::~Player(){
 
 }
 
-void Player::gameUpdate(){
+void Player::gameUpdate(float time){
 	if(keystate[SDL_SCANCODE_DOWN]){
-		ypos += 0.00001;
+		ypos += movementSpeed * time;
+	}
+	if(keystate[SDL_SCANCODE_UP]){
+		ypos -= movementSpeed * time;
+	}
+	if(keystate[SDL_SCANCODE_LEFT]){
+		xpos -= movementSpeed * time;
+	}
+	if(keystate[SDL_SCANCODE_RIGHT]){
+		xpos += movementSpeed * time;
 	}
 }
