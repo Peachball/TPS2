@@ -24,5 +24,5 @@ class Player : public GameObject{
 		float xpos;
 		float ypos;
 
-		double movementSpeed = 0.000000004;
+		float movementSpeed = 0.4;
 };
