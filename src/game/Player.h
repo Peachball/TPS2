@@ -12,10 +12,15 @@ class Player : public GameObject{
 		virtual ~Player();
 		void getInput(const SDL_Event* event);
 
+		virtual void gameUpdate();
+
 	private:
 		SDL_Texture *image;
 		SDL_Rect src;
 		SDL_Rect dest;
 
-		Uint8* keystate;
+		bool* keystate;
+
+		float xpos;
+		float ypos;
 };

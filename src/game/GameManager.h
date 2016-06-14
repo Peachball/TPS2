@@ -18,6 +18,8 @@ class GameManager{
 		~GameManager();
 
 		void startGame();
+
+		//Stops all thread associated with game
 		void endGame();
 
 		int status;

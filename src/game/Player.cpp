@@ -13,11 +13,13 @@ Player::Player(float x, float y){
 	dest = src;
 	dest.x = 100;
 
-	keystate = new Uint8[300];
+	keystate = new bool[300];
 }
 
 void Player::display(){
 	using namespace graphics;
+	dest.x = (int) xpos;
+	dest.y = (int) ypos;
 	if(SDL_RenderCopy(render, image, &src, &dest)<0){
 		logError();
 	}
@@ -61,11 +63,6 @@ void Player::getInput(const SDL_Event* event){
 
 			break;
 	}
-
-	if(keystate[SDL_SCANCODE_DOWN]){
-		std::cout<<"Down button down\n";
-		dest.y++;
-	}
 }
 
 Player::~Player(){
@@ -74,4 +71,11 @@ Player::~Player(){
 
 	delete [] keystate;
 	keystate = NULL;
+
+}
+
+void Player::gameUpdate(){
+	if(keystate[SDL_SCANCODE_DOWN]){
+		ypos += 0.00001;
+	}
 }

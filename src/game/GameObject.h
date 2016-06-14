@@ -4,8 +4,7 @@
 class GameObject{
 	public:
 		virtual void display()=0;
-		float xpos;
-		float ypos;
+		virtual void gameUpdate()=0;
 		
 		virtual ~GameObject(){};
 };

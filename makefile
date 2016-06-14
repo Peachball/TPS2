@@ -32,3 +32,7 @@ $(BUILD)%.o: %.cpp
 clean:
 	find . -type f -iname \*.swp -delete
 	rm -R -- build/*
+
+rebuild:
+	make clean
+	make build

@@ -57,6 +57,10 @@ void GameManager::endGame(){
 //	Manage game status
 void GameManager::manageGame(){
 	while(status != GameManager::State::END){
+		for(int i = 0; i < objects.size(); i++){
+			GameObject* g = objects[i];
+			g->gameUpdate();
+		}
 	}
 
 }
