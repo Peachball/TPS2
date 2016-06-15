@@ -1,14 +1,16 @@
-#pragma once
+#ifndef _PLAYER_H
+#define _PLAYER_H
+
+//#include "game/GameManager.h"
 #include "game/GameObject.h"
 #include "Graphics.h"
-#include <SDL2/SDL.h>
-#include "game/GameManager.h"
 
 class GameManager;
 
 class Player : public GameObject{
 	public:
 		static const std::string DEFAULT_TEXTURE_LOC;
+
 		Player(GameManager* m, float x=0, float y=0);
 		virtual void display();
 		virtual ~Player();
@@ -29,3 +31,5 @@ class Player : public GameObject{
 
 		float movementSpeed = 4;
 };
+
+#endif

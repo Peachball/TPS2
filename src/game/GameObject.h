@@ -1,7 +1,6 @@
 #ifndef _GAMEOBJECT_H
 #define _GAMEOBJECT_H
 #include "Graphics.h"
-#include "game/GameManager.h"
 
 class GameManager;
 
@@ -16,7 +15,7 @@ class GameObject{
 		//Load textures and such for the objects beforehand
 		static void init();
 
-	private:
+	protected:
 		GameManager* manager;
 };
 

@@ -1,9 +1,8 @@
 #pragma once
-#include <iostream>
-#include "game/GameObject.h"
-#include "game/Player.h"
 #include <vector>
 #include <thread>
+#include <iostream>
+#include "game/Player.h"
 
 class GameObject;
 

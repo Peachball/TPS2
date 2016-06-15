@@ -9,4 +9,3 @@ void GameObject::init(){
 
 GameObject::~GameObject(){
 }
-:A
