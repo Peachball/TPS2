@@ -25,11 +25,12 @@ class GameManager{
 		int status;
 	private:
 		std::vector<GameObject*> objects;
+
+		void render();
 		void renderloop();
 		void eventHandler();
 		void manageGame();
 
-		std::thread* renderThread;
 		std::thread* eventThread;
 		std::thread* gameThread;
 

@@ -15,9 +15,6 @@ GameManager::~GameManager(){
 		objects.pop_back();
 	}
 
-	if(renderThread != NULL){
-		delete renderThread;
-	}
 	if(eventThread != NULL){
 		delete eventThread;
 	}
@@ -25,7 +22,7 @@ GameManager::~GameManager(){
 		delete gameThread;
 	}
 
-	renderThread = gameThread = eventThread = NULL;
+	gameThread = eventThread = NULL;
 }
 
 void GameManager::startGame(){
@@ -35,7 +32,6 @@ void GameManager::startGame(){
 	//Debugging purposes only currently
 	status = GameManager::State::DURING;
 
-	renderThread = new std::thread(&GameManager::renderloop, this);
 	eventThread  = new std::thread(&GameManager::eventHandler, this);
 	gameThread   = new std::thread(&GameManager::manageGame, this);
 
@@ -44,7 +40,6 @@ void GameManager::startGame(){
 void GameManager::endGame(){
 	status = GameManager::State::END;
 
-	renderThread->join();
 	eventThread->join();
 	gameThread->join();
 
@@ -56,12 +51,18 @@ void GameManager::endGame(){
 //	Collision detection
 //	Manage game status
 void GameManager::manageGame(){
+	Uint32 prevTime = 0;
 	while(status != GameManager::State::END){
 		Uint32 lastTime= SDL_GetTicks();
 		for(int i = 0; i < objects.size(); i++){
 			GameObject* g = objects[i];
-			g->gameUpdate(SDL_GetTicks() - lastTime);
+			g->gameUpdate(prevTime+1);
 		}
+
+		prevTime = SDL_GetTicks() - lastTime;
+		lastTime = SDL_GetTicks();
+
+		render();
 	}
 
 }
@@ -87,19 +88,18 @@ void GameManager::eventHandler(){
 
 	std::cout<<"Stopped polling events\n";
 }
+
+void GameManager::render(){
+	graphics::clear();
+	for(std::vector<GameObject*>::iterator it=objects.begin();
+			it != objects.end(); ++it){
+		(*it)->display();
+	}
+	graphics::update();
+
+}
 /*
  * Display Current state
 */
 void GameManager::renderloop(){
-	std::cout<<"Size of render loop "<<objects.size()<<'\n';
-	graphics::clear();
-	while(status == GameManager::State::DURING){
-		graphics::clear();
-		for(std::vector<GameObject*>::iterator it=objects.begin();
-				it != objects.end(); ++it){
-			(*it)->display();
-		}
-		graphics::update();
-	}
-	std::cout<<"Exited rendering loop\n";
 }

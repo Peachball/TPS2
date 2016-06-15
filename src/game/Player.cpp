@@ -66,7 +66,6 @@ void Player::getInput(const SDL_Event* event){
 }
 
 Player::~Player(){
-	logError("hi");
 	graphics::close(image);
 
 	delete [] keystate;
@@ -74,7 +73,8 @@ Player::~Player(){
 
 }
 
-void Player::gameUpdate(float time){
+void Player::gameUpdate(Uint32 time){
+//	std::cout<<time<<'\n';
 	if(keystate[SDL_SCANCODE_DOWN]){
 		ypos += movementSpeed * time;
 	}
