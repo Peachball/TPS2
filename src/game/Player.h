@@ -20,7 +20,7 @@ class Player : public GameObject{
 		virtual void init();
 
 	private:
-		SDL_Texture *image;
+		static SDL_Texture *image;
 		SDL_Rect src;
 		SDL_Rect dest;
 
@@ -30,6 +30,7 @@ class Player : public GameObject{
 		float ypos;
 
 		float movementSpeed = 4;
+
 };
 
 #endif

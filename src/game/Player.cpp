@@ -1,9 +1,10 @@
 #include "Player.h"
 
 const std::string Player::DEFAULT_TEXTURE_LOC="player-topdown.png";
+SDL_Texture* Player::image = NULL;
 
 Player::Player(GameManager* m, float x, float y):GameObject(m){
-	image = graphics::loadTexture(Player::DEFAULT_TEXTURE_LOC.c_str());
+	init();
 	xpos = x;
 	ypos = y;
 
@@ -93,4 +94,11 @@ void Player::gameUpdate(Uint32 time){
 }
 
 void Player::init(){
+	static bool initialized = false;
+	if(initialized){
+		return;
+	}
+	image = graphics::loadTexture(Player::DEFAULT_TEXTURE_LOC.c_str());
+
+	initialized = true;
 }
