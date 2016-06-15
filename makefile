@@ -25,7 +25,11 @@ debug: $(OBJS)
 run: $(BUILD)$(APP_NAME)
 	exec $<
 
-$(BUILD)%.o: %.cpp
+$(BUILD)%.o: %.cpp %.h
+	mkdir -p $(dir $@)
+	$(CC) -c $< $(COMPILER_FLAGS) -o $@
+
+build/src/Main.o: src/Main.cpp
 	mkdir -p $(dir $@)
 	$(CC) -c $< $(COMPILER_FLAGS) -o $@
 

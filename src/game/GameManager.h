@@ -1,9 +1,11 @@
 #pragma once
 #include <iostream>
-#include "GameObject.h"
-#include "Player.h"
+#include "game/GameObject.h"
+#include "game/Player.h"
 #include <vector>
 #include <thread>
+
+class GameObject;
 
 class GameManager{
 	public:

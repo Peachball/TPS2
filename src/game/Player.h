@@ -1,18 +1,21 @@
 #pragma once
-#include "GameObject.h"
+#include "game/GameObject.h"
 #include "Graphics.h"
 #include <SDL2/SDL.h>
+#include "game/GameManager.h"
 
-static const std::string DEFAULT_NAME="player-topdown.png";
+class GameManager;
 
 class Player : public GameObject{
 	public:
-		Player(float x=0, float y=0);
+		static const std::string DEFAULT_TEXTURE_LOC;
+		Player(GameManager* m, float x=0, float y=0);
 		virtual void display();
 		virtual ~Player();
 		void getInput(const SDL_Event* event);
 
 		virtual void gameUpdate(Uint32 time);
+		virtual void init();
 
 	private:
 		SDL_Texture *image;

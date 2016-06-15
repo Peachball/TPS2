@@ -3,7 +3,7 @@
 
 GameManager::GameManager(){
 	//Default settings here
-	Player* p = new Player();
+	Player* p = new Player(this);
 	localPlayer = p;
 	objects.push_back(p);
 }
@@ -26,6 +26,10 @@ GameManager::~GameManager(){
 }
 
 void GameManager::startGame(){
+
+	for(GameObject* g : objects){
+		g->init();
+	}
 
 	//Initalize debug mode stuff
 
