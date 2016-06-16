@@ -1,11 +1,17 @@
 #include "Graphics.h"
 
+void logError(std::string s){
+	std::cout<<s<<'\n';
+}
+
 namespace graphics{
 
-	SDL_Window* window=NULL;
-	SDL_Surface* screenSurface=NULL;
-	SDL_Renderer* render=NULL;
-	bool status=false;
+	SDL_Window* window         = NULL;
+	SDL_Surface* screenSurface = NULL;
+	SDL_Renderer* render       = NULL;
+
+	//Status: whether or not the sdl stuff is ready for drawing
+	bool status = false;
 
 	int create(){
 		status = true;
@@ -17,7 +23,7 @@ namespace graphics{
 		}
 
 		int flags = IMG_INIT_JPG|IMG_INIT_PNG;
-		if( (IMG_Init(flags) & flags) != flags){
+		if((IMG_Init(flags) & flags) != flags){
 			std::cout<<"Failed to load IMG correctly\n";
 			std::cout<<"Error: "<<IMG_GetError()<<'\n';
 			status = false;
@@ -33,12 +39,14 @@ namespace graphics{
 		}
 		screenSurface = SDL_GetWindowSurface(window);
 
-		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 		if(render == NULL){
 			std::cout<<"Failed to load sdl renderer\n";
 			std::cout<<"Error: "<<SDL_GetError()<<'\n';
 			status = false;
 		}
+
+		return !status;
 	}
 
 	void clear(){
@@ -58,21 +66,26 @@ namespace graphics{
 		SDL_UpdateWindowSurface(window);
 	}
 
-	void close(){
+	void closeSDL(){
 		SDL_DestroyWindow(window);
 		SDL_DestroyRenderer(render);
 		window = NULL;
+
 		SDL_Quit();
 	}
 
-	void closeSurface(SDL_Surface* surface){
-		SDL_FreeSurface(surface);
-		surface = NULL;
+	void close(SDL_Surface* surface){
+		if(surface != NULL){
+			SDL_FreeSurface(surface);
+			surface = NULL;
+		}
 	}
 
-	void closeTexture(SDL_Texture* texture){
-		SDL_DestroyTexture(texture);
-		texture = NULL;
+	void close(SDL_Texture* texture){
+		if(texture != NULL){
+			SDL_DestroyTexture(texture);
+			texture = NULL;
+		}
 	}
 
 	SDL_Surface* loadImage(const char* source){
@@ -90,7 +103,7 @@ namespace graphics{
 		}
 		else{
 			optimized = SDL_ConvertSurface(target, screenSurface->format, NULL);
-			closeSurface(target);
+			close(target);
 			if(optimized == NULL){
 				std::cout<<"Failed to convert surface. Error: "<<SDL_GetError()<<'\n';
 			}
@@ -105,7 +118,7 @@ namespace graphics{
 		}
 		SDL_Surface* optimizedSurface = loadImage(source);
 		SDL_Texture* texture = SDL_CreateTextureFromSurface(render, optimizedSurface);
-		closeSurface(optimizedSurface);
+		close(optimizedSurface);
 
 		if(texture == NULL){
 			std::cout<<"Unable to load texture\n";
@@ -114,4 +127,7 @@ namespace graphics{
 		return texture;
 	}
 
+	void logError(){
+		std::cout<<"SDL Error: "<< SDL_GetError()<<'\n';
+	}
 }

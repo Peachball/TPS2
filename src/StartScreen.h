@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Graphics.h"
 #include "Screen.h"
-#include "GUIHandler.h"
+#include "gui/GUIHandler.h"
 
 using namespace graphics;
 
