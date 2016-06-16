@@ -3,3 +3,9 @@
 GameObject::GameObject(GameManager* m){
 	manager = m;
 }
+
+void GameObject::init(){
+}
+
+void GameObject::del(){
+}

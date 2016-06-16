@@ -3,8 +3,6 @@
 #include "Graphics.h"
 #include <SDL2/SDL.h>
 
-static const std::string DEFAULT_NAME="player-topdown.png";
-
 class Player : public GameObject{
 	public:
 		Player(GameManager* m, float x=0, float y=0);
@@ -14,8 +12,12 @@ class Player : public GameObject{
 
 		virtual void gameUpdate(Uint32 time);
 
+		static void init();
+		static void del();
+
 	private:
-		SDL_Texture *image;
+		static SDL_Texture *image;
+		static const std::string DEFAULT_NAME;
 		SDL_Rect src;
 		SDL_Rect dest;
 

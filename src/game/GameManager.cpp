@@ -1,6 +1,7 @@
 #include "GameManager.h"
 #include "game/GameObject.h"
 #include "game/Player.h"
+#include "game/Bullet.h"
 
 GameManager::GameManager(){
 	//Default settings here
@@ -43,6 +44,9 @@ void GameManager::endGame(){
 
 	eventThread->join();
 	gameThread->join();
+
+	Player::del();
+	Bullet::del();
 
 	std::cout<<"Game ended successfully\n";
 }
