@@ -1,22 +1,15 @@
-#ifndef _GAMEOBJECT_H
-#define _GAMEOBJECT_H
+#pragma once
 #include "Graphics.h"
-
-class GameManager;
+#include "game/GameManager.h"
 
 class GameObject{
 	public:
-
 		GameObject(GameManager* m);
+
 		virtual void display()=0;
 		virtual void gameUpdate(Uint32 time)=0;
-		virtual ~GameObject();
-
-		//Load textures and such for the objects beforehand
-		static void init();
+		virtual ~GameObject(){};
 
 	protected:
 		GameManager* manager;
 };
-
-#endif

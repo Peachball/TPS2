@@ -1,10 +1,13 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <thread>
-#include <iostream>
-#include "game/Player.h"
 
+#include "Graphics.h"
+
+//Include files are in cpp file
 class GameObject;
+class Player;
 
 class GameManager{
 	public:

@@ -1,5 +1,6 @@
 #include "GameManager.h"
-
+#include "game/GameObject.h"
+#include "game/Player.h"
 
 GameManager::GameManager(){
 	//Default settings here
@@ -26,10 +27,6 @@ GameManager::~GameManager(){
 }
 
 void GameManager::startGame(){
-
-	for(GameObject* g : objects){
-		g->init();
-	}
 
 	//Initalize debug mode stuff
 

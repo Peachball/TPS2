@@ -1,16 +1,12 @@
 #include <SDL2/SDL.h>
 #include <iostream>
-
 #include "Graphics.h"
 #include "game/GameScreen.h"
 #include "StartScreen.h"
 #include "gui/GUIHandler.h"
 
 int main(){
-	std::cout<<"Program just started\n";
-	int status = graphics::create();
-
-	std::cout<<status<<'\n';
+	graphics::create();
 
 	Screen* scr = new GameScreen(TESTER);
 

@@ -1,10 +1,7 @@
 #include "Player.h"
 
-const std::string Player::DEFAULT_TEXTURE_LOC="player-topdown.png";
-SDL_Texture* Player::image = NULL;
-
-Player::Player(GameManager* m, float x, float y):GameObject(m){
-	init();
+Player::Player(GameManager* m, float x, float y) : GameObject(m){
+	image = graphics::loadTexture(DEFAULT_NAME.c_str());
 	xpos = x;
 	ypos = y;
 
@@ -63,6 +60,7 @@ void Player::getInput(const SDL_Event* event){
 					keystate[SDL_SCANCODE_LEFT] = false;
 					break;
 			}
+
 			break;
 	}
 }
@@ -76,9 +74,7 @@ Player::~Player(){
 }
 
 void Player::gameUpdate(Uint32 time){
-	if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)){
-		
-	}
+//	std::cout<<time<<'\n';
 	if(keystate[SDL_SCANCODE_DOWN]){
 		ypos += movementSpeed * time;
 	}
@@ -91,14 +87,4 @@ void Player::gameUpdate(Uint32 time){
 	if(keystate[SDL_SCANCODE_RIGHT]){
 		xpos += movementSpeed * time;
 	}
-}
-
-void Player::init(){
-	static bool initialized = false;
-	if(initialized){
-		return;
-	}
-	image = graphics::loadTexture(Player::DEFAULT_TEXTURE_LOC.c_str());
-
-	initialized = true;
 }
