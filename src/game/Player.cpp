@@ -21,8 +21,8 @@ Player::Player(GameManager* m, float x, float y) : GameObject(m){
 
 void Player::display(){
 	using namespace graphics;
-	dest.x = (int) xpos;
-	dest.y = (int) ypos;
+	dest.x = (int) (xpos - src.w / 2.0);
+	dest.y = (int) (ypos - src.h / 2.0);
 	if(SDL_RenderCopy(render, Player::image, &src, &dest)<0){
 		logError();
 	}
@@ -79,13 +79,33 @@ void Player::shoot(float direction){
 }
 
 void Player::gameUpdate(Uint32 time){
-
 	//Detect mouse button status
 	int x;
 	int y;
 	if(SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
-		std::cout<<"Mouse Coordinates: ("<<x<<", "<<y<<") \n";
 		shoot(x);
+	}
+
+	float relx = x - xpos;
+	float rely = y - ypos;
+	//Right side
+	if(relx > abs(rely)){
+		src.y = src.h * 3;
+	}
+	
+	//Top side
+	if(rely < -abs(relx)){
+		src.y = src.h * 1;
+	}
+
+	//Left Side
+	if(relx < -abs(rely)){
+		src.y = src.h * 2;
+	}
+
+	//Bottom
+	if(rely > abs(relx)){
+		src.y = src.h * 0;
 	}
 	if(keystate[SDL_SCANCODE_DOWN]){
 		ypos += movementSpeed * time;

@@ -62,11 +62,10 @@ void GameManager::manageGame(){
 		for(GameObject* g : objects){
 			g->gameUpdate(prevTime+1);
 		}
+		render();
 
 		prevTime = SDL_GetTicks() - lastTime;
 		lastTime = SDL_GetTicks();
-
-		render();
 	}
 
 }
