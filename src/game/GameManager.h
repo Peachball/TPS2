@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include <vector>
+#include <list>
 #include <thread>
 
 #include "Graphics.h"
@@ -22,16 +22,16 @@ class GameManager{
 		~GameManager();
 
 		void startGame();
-
-		//Stops all thread associated with game
 		void endGame();
+
+		void addObject(GameObject* g);
+		void removeObject(GameObject* g);
 
 		int status;
 	private:
-		std::vector<GameObject*> objects;
+		std::list<GameObject*> objects;
 
 		void render();
-		void renderloop();
 		void eventHandler();
 		void manageGame();
 

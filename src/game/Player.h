@@ -2,6 +2,7 @@
 #include "game/GameObject.h"
 #include "Graphics.h"
 #include <SDL2/SDL.h>
+#include "game/Bullet.h"
 
 class Player : public GameObject{
 	public:
@@ -27,4 +28,6 @@ class Player : public GameObject{
 		float ypos;
 
 		float movementSpeed = 4;
+
+		void shoot();
 };

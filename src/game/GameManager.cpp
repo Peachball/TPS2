@@ -59,8 +59,7 @@ void GameManager::manageGame(){
 	Uint32 prevTime = 0;
 	while(status != GameManager::State::END){
 		Uint32 lastTime= SDL_GetTicks();
-		for(int i = 0; i < objects.size(); i++){
-			GameObject* g = objects[i];
+		for(GameObject* g : objects){
 			g->gameUpdate(prevTime+1);
 		}
 
@@ -96,15 +95,18 @@ void GameManager::eventHandler(){
 
 void GameManager::render(){
 	graphics::clear();
-	for(std::vector<GameObject*>::iterator it=objects.begin();
-			it != objects.end(); ++it){
-		(*it)->display();
+	for(GameObject* it : objects){
+		it->display();
 	}
 	graphics::update();
-
 }
-/*
- * Display Current state
-*/
-void GameManager::renderloop(){
+
+void GameManager::addObject(GameObject* g){
+	objects.push_back(g);
+}
+
+void GameManager::removeObject(GameObject* g){
+	objects.remove(g);
+	delete g;
+	g = NULL;
 }
