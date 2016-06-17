@@ -1,5 +1,6 @@
 #ifndef _BULLET_H
 #define _BULLET_H
+#include <mutex>
 #include <math.h>
 #include "Graphics.h"
 #include "game/GameObject.h"
@@ -17,9 +18,11 @@ class Bullet : public GameObject{
 		static void del();
 
 	private:
+		static std::mutex imageLock;
 		static SDL_Texture *image;
 		static std::string IMAGE_LOC;
 
+		SDL_Rect src;
 		SDL_Rect dest;
 		float speed;
 		float xpos;

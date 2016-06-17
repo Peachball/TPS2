@@ -73,16 +73,19 @@ Player::~Player(){
 	keystate = NULL;
 }
 
-void Player::shoot(){
-	Bullet* b = new Bullet(manager);
+void Player::shoot(float direction){
+	Bullet* b = new Bullet(manager, xpos, ypos, direction);
 	manager->addObject(b);
 }
 
 void Player::gameUpdate(Uint32 time){
 
 	//Detect mouse button status
-	if(SDL_GetMouseState(NULL, NULL) & SDL_BUTTON(SDL_BUTTON_LEFT)){
-		shoot();
+	int x;
+	int y;
+	if(SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
+		std::cout<<"Mouse Coordinates: ("<<x<<", "<<y<<") \n";
+		shoot(x);
 	}
 	if(keystate[SDL_SCANCODE_DOWN]){
 		ypos += movementSpeed * time;

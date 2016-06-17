@@ -29,5 +29,5 @@ class Player : public GameObject{
 
 		float movementSpeed = 4;
 
-		void shoot();
+		void shoot(float direction);
 };
