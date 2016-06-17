@@ -83,7 +83,11 @@ void Player::gameUpdate(Uint32 time){
 	int x;
 	int y;
 	if(SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
-		shoot(x);
+		float correction = 0;
+		if(xpos - x > 0){
+			correction = M_PI;
+		}
+		shoot(atan((ypos - y) / (xpos - x)) + correction);
 	}
 
 	float relx = x - xpos;
@@ -126,10 +130,10 @@ void Player::init(){
 	if(initialized){
 		return;
 	}
-
 	image = graphics::loadTexture(DEFAULT_NAME.c_str());
+	initialized = true;
 }
 
 void Player::del(){
-	graphics::close(Player::image);
+	graphics::close(image);
 }

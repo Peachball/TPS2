@@ -45,6 +45,7 @@ namespace graphics{
 			std::cout<<"Error: "<<SDL_GetError()<<'\n';
 			status = false;
 		}
+//		SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
 
 		return !status;
 	}
@@ -54,7 +55,9 @@ namespace graphics{
 			std::cout<<"SDL not fully initialized...\n";
 			return;
 		}
-		SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+		SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+
+		SDL_RenderClear(render);
 	}
 
 	void update(){
@@ -63,7 +66,7 @@ namespace graphics{
 			return;
 		}
 
-		SDL_UpdateWindowSurface(window);
+		SDL_RenderPresent(render);
 	}
 
 	void closeSDL(){
@@ -102,7 +105,7 @@ namespace graphics{
 			std::cout<<"Error: "<<SDL_GetError()<<'\n';
 		}
 		else{
-			optimized = SDL_ConvertSurface(target, screenSurface->format, NULL);
+			optimized = SDL_ConvertSurface(target, target->format, NULL);
 			close(target);
 			if(optimized == NULL){
 				std::cout<<"Failed to convert surface. Error: "<<SDL_GetError()<<'\n';

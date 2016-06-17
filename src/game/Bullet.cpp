@@ -1,7 +1,7 @@
 #include "game/Bullet.h"
 
 SDL_Texture* Bullet::image = NULL;
-std::string Bullet::IMAGE_LOC = "bullet.jpeg";
+std::string Bullet::IMAGE_LOC = "bullet.png";
 std::mutex Bullet::imageLock;
 
 Bullet::Bullet(GameManager* m, float x, float y, float direction): GameObject(m){
@@ -47,7 +47,11 @@ void Bullet::init(){
 	if(initialized){
 		return;
 	}
+	imageLock.lock();
 	image = graphics::loadTexture(IMAGE_LOC.c_str());
+	imageLock.unlock();
+
+	initialized = true;
 }
 
 void Bullet::del(){

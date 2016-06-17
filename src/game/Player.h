@@ -1,4 +1,7 @@
-#pragma once
+#ifndef _PLAYER_H
+#define _PLAYER_H
+#define _USE_MATH_DEFINES
+#include <math.h>
 #include "game/GameObject.h"
 #include "Graphics.h"
 #include <math.h>
@@ -28,7 +31,9 @@ class Player : public GameObject{
 		float xpos;
 		float ypos;
 
-		float movementSpeed = 4;
+		float movementSpeed = 1;
 
 		void shoot(float direction);
 };
+
+#endif
