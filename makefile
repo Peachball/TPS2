@@ -27,8 +27,8 @@ else
 	endif
 endif
 
-BUILD_LINUX =build/
-INCLUDE_PATHS = -Isrc/
+BUILD=build/
+INCLUDE_PATHS = -Isrc/ -Ilib/include/
 
 APP_NAME = TPS
 
@@ -39,36 +39,31 @@ COMPILER_FLAGS = -std=c++11 $(INCLUDE_PATHS)
 GAME_OBJS = $(wildcard src/game/*.cpp)
 GUI_OBJS = $(wildcard src/gui/*.cpp)
 
-OBJS_LINUX = $(wildcard src/*.cpp) $(GAME_OBJS) $(GUI_OBJS)
+OBJS= $(wildcard src/*.cpp) $(GAME_OBJS) $(GUI_OBJS)
 
-OBJ_FILES_LINUX = $(addprefix $(BUILD), $(OBJS:.cpp=.o))
+#For some reason, the slash status for these are always correct...
+#E.g. it's backslash for windows and forward for linux
+OBJ_FILES= $(addprefix $(BUILD), $(OBJS:.cpp=.o))
 
 LINKER_FLAGS = -lSDL2 -lSDL2_image
 
 ifneq ($(findstring WIN32,$(os)),)
 	MAKE_DIR = mkdir
-	REM_DIR = RM /S /Q
-	BUILD=$(subst /,\,$(BUILD_LINUX))
-#	OBJ_FILES=$(subst /,\,$(OBJ_FILES_LINUX))
-	OBJS=$(subst /,\,$(OBJS_LINUX))
+	REM_DIR = rmdir /S /Q
+	PATH_SEP=\\
 endif
 
 ifneq ($(findstring LINUX,$(os)),)
 	MAKE_DIR = mkdir -p
 	REM_DIR = rm -rf
 	PATH_SEP = /
-	BUILD =$(BUILD_LINUX)
-	OBJ_FILES =$(OBJ_FILES_LINUX)
-	OBJS =$(OBJS_LINUX)
+	PATH_SEP=/
 endif
 
 test:
-ifneq ($(findstring WIN32,$(os)),)
-	echo windows
-endif
-	echo $(OBJ_FILES_LINUX)
+	echo hi
 
-build: $(OBJ_FILES_LINUX)
+build: $(OBJ_FILES)
 	echo $(OBJ_FILES)
 	$(CC) $(OBJ_FILES) -w $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(BUILD)$(APP_NAME)
 
@@ -78,13 +73,11 @@ debug: $(OBJS)
 run: $(BUILD)$(APP_NAME)
 	exec $<
 
-$(BUILD_LINUX)%.o: %.cpp
-	$(MAKE_DIR) $(dir $@)
+$(BUILD)%.o: %.cpp
+	if ![ -d $(subst /,$(PATH_SEP),$(dir $@))]; then \
+		$(MAKE_DIR) $(subst /,$(PATH_SEP),$(dir $@)) \
+	fi
 	$(CC) -c $< $(COMPILER_FLAGS) -o $@
 
-%:
-	echo hi
-
-
 clean:
-	$(REM_DIR) $(BUILD)
+	$(REM_DIR) $(subst /,$(PATH_SEP),$(BUILD))
