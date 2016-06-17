@@ -1,5 +1,5 @@
 BUILD=build/
-INCLUDE_PATHS = -Isrc/
+INCLUDE_PATHS = -Isrc/ -Ilib/include/
 
 APP_NAME = TPS
 
