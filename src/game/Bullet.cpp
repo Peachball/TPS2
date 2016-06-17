@@ -1,6 +1,7 @@
 #include "game/Bullet.h"
 
 SDL_Texture* Bullet::image = NULL;
+SDL_Surface* Bullet::surface = NULL;
 std::string Bullet::IMAGE_LOC = "bullet.png";
 std::mutex Bullet::imageLock;
 
@@ -8,15 +9,11 @@ Bullet::Bullet(GameManager* m, float x, float y, float direction): GameObject(m)
 	init();
 	xpos = x;
 	ypos = y;
-	int w, h;
-	imageLock.lock();
-	SDL_QueryTexture(image, NULL, NULL, &w, &h);
-	imageLock.unlock();
 	src.x = 0;
 	src.y = 0;
-	src.w = w;
-	src.h = h;
-	speed = 1;
+	src.w = 100;
+	src.h = 100;
+	speed = 0.1;
 	this->direction = direction;
 }
 
@@ -47,13 +44,16 @@ void Bullet::init(){
 	if(initialized){
 		return;
 	}
-	imageLock.lock();
+
 	image = graphics::loadTexture(IMAGE_LOC.c_str());
-	imageLock.unlock();
+	surface = graphics::loadImage(IMAGE_LOC.c_str());
 
 	initialized = true;
+	std::cout<<"Bullet initialized\n";
 }
 
 void Bullet::del(){
 	graphics::close(image);
+	graphics::close(surface);
+	std::cout<<"Bullet deleted\n";
 }

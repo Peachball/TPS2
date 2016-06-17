@@ -7,7 +7,6 @@ void logError(std::string s){
 namespace graphics{
 
 	SDL_Window* window         = NULL;
-	SDL_Surface* screenSurface = NULL;
 	SDL_Renderer* render       = NULL;
 
 	//Status: whether or not the sdl stuff is ready for drawing
@@ -37,7 +36,6 @@ namespace graphics{
 			status = false;
 			return -1;
 		}
-		screenSurface = SDL_GetWindowSurface(window);
 
 		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 		if(render == NULL){
@@ -45,7 +43,6 @@ namespace graphics{
 			std::cout<<"Error: "<<SDL_GetError()<<'\n';
 			status = false;
 		}
-//		SDL_SetRenderDrawBlendMode(render, SDL_BLENDMODE_BLEND);
 
 		return !status;
 	}
@@ -113,7 +110,7 @@ namespace graphics{
 		}
 		return optimized;
 	}
-	
+
 	SDL_Texture* loadTexture(const char* source){
 		if(!status){
 			std::cout<<"SDL not fully initialized...\n";

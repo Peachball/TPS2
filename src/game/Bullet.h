@@ -20,6 +20,7 @@ class Bullet : public GameObject{
 	private:
 		static std::mutex imageLock;
 		static SDL_Texture *image;
+		static SDL_Surface* surface;
 		static std::string IMAGE_LOC;
 
 		SDL_Rect src;
