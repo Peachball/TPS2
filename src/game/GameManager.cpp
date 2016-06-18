@@ -17,14 +17,11 @@ GameManager::~GameManager(){
 		objects.pop_back();
 	}
 
-	if(eventThread != NULL){
-		delete eventThread;
-	}
 	if(gameThread != NULL){
 		delete gameThread;
 	}
 
-	gameThread = eventThread = NULL;
+	gameThread = NULL;
 }
 
 void GameManager::startGame(){
@@ -34,7 +31,6 @@ void GameManager::startGame(){
 	//Debugging purposes only currently
 	status = GameManager::State::DURING;
 
-	eventThread  = new std::thread(&GameManager::eventHandler, this);
 	gameThread   = new std::thread(&GameManager::manageGame, this);
 
 }
@@ -42,7 +38,6 @@ void GameManager::startGame(){
 void GameManager::endGame(){
 	status = GameManager::State::END;
 
-	eventThread->join();
 	gameThread->join();
 
 	Player::del();
@@ -70,7 +65,7 @@ void GameManager::manageGame(){
 
 }
 
-void GameManager::eventHandler(){
+void GameManager::handleEvents(){
 	SDL_Event event;
 	std::cout<<"Polling events\n";
 	while(status != GameManager::State::END){

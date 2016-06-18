@@ -1,4 +1,10 @@
 *.swp
 /build/
-*.xcf
 *.pyc
+*~
+*.xcf
+CMakeCache.txt
+CMakeFiles/
+Makefile
+TPS2
+cmake_install.cmake

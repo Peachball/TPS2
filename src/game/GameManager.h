@@ -27,15 +27,15 @@ class GameManager{
 		void addObject(GameObject* g);
 		void removeObject(GameObject* g);
 
+		void handleEvents();
+
 		int status;
 	private:
 		std::list<GameObject*> objects;
 
 		void render();
-		void eventHandler();
 		void manageGame();
 
-		std::thread* eventThread;
 		std::thread* gameThread;
 
 		Player* localPlayer;

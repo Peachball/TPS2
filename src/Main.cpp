@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#undef main
 #include <iostream>
 #include "Graphics.h"
 #include "game/GameScreen.h"
