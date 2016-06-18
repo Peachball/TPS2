@@ -75,6 +75,7 @@ void GameManager::eventHandler(){
 	std::cout<<"Polling events\n";
 	while(status != GameManager::State::END){
 		while(SDL_PollEvent(&event)){
+			std::cout << "Heard event\n";
 			localPlayer->getInput(&event);
 
 			switch(event.type){
@@ -82,6 +83,7 @@ void GameManager::eventHandler(){
 					switch(event.window.event){
 						case SDL_WINDOWEVENT_CLOSE:
 							status = GameManager::State::END;
+							std::cout << "Close event heard\n";
 							break;
 					}
 					break;
