@@ -3,3 +3,8 @@
 *.xcf
 *.pyc
 *~
+CMakeCache.txt
+CMakeFiles/
+Makefile
+TPS2
+cmake_install.cmake

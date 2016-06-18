@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.4)
+cmake_minimum_required (VERSION 2.8)
 project(TPS2)
 
 file(GLOB_RECURSE OBJS_SOURCE src/*.cpp)
@@ -11,7 +11,13 @@ include_directories(lib/include)
 add_executable(${PROJECT_NAME} ${OBJS_SOURCE} ${HEADER_FILES})
 
 if (UNIX)
+	INCLUDE(FindPkgConfig)
 
+	PKG_SEARCH_MODULE(SDL2 REQUIRED sdl2)
+	PKG_SEARCH_MODULE(SDL2IMAGE REQUIRED SDL2_image>=2.0.0)
+
+	INCLUDE_DIRECTORIES(${SDL2_INCLUDE_DIRS} ${SDL2IMAGE_INCLUDE_DIRS})
+	TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${SDL2_LIBRARIES} ${SDL2IMAGE_LIBRARIES})
 endif(UNIX)
 
 if(WIN32)
