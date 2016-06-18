@@ -1,7 +1,10 @@
 #include "Player.h"
 
-Player::Player(float x, float y){
-	image = graphics::loadTexture(DEFAULT_NAME.c_str());
+SDL_Texture* Player::image = NULL;
+const std::string Player::DEFAULT_NAME ="player-topdown.png";
+
+Player::Player(GameManager* m, float x, float y) : GameObject(m){
+	init();
 	xpos = x;
 	ypos = y;
 
@@ -13,12 +16,14 @@ Player::Player(float x, float y){
 	dest = src;
 	dest.x = 100;
 
-	keystate = new Uint8[300];
+	keystate = new bool[300];
 }
 
 void Player::display(){
 	using namespace graphics;
-	if(SDL_RenderCopy(render, image, &src, &dest)<0){
+	dest.x = (int) (xpos - src.w / 2.0);
+	dest.y = (int) (ypos - src.h / 2.0);
+	if(SDL_RenderCopy(render, Player::image, &src, &dest)<0){
 		logError();
 	}
 }
@@ -61,17 +66,74 @@ void Player::getInput(const SDL_Event* event){
 
 			break;
 	}
-
-	if(keystate[SDL_SCANCODE_DOWN]){
-		std::cout<<"Down button down\n";
-		dest.y++;
-	}
 }
 
 Player::~Player(){
-	logError("hi");
-	graphics::close(image);
-
 	delete [] keystate;
 	keystate = NULL;
+}
+
+void Player::shoot(float direction){
+	Bullet* b = new Bullet(manager, xpos, ypos, direction);
+	manager->addObject(b);
+}
+
+void Player::gameUpdate(Uint32 time){
+	//Detect mouse button status
+	int x;
+	int y;
+	if(SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
+		float correction = 0;
+		if(xpos - x > 0){
+			correction = M_PI;
+		}
+		shoot(atan((ypos - y) / (xpos - x)) + correction);
+	}
+
+	float relx = x - xpos;
+	float rely = y - ypos;
+	//Right side
+	if(relx > abs(rely)){
+		src.y = src.h * 3;
+	}
+	
+	//Top side
+	if(rely < -abs(relx)){
+		src.y = src.h * 1;
+	}
+
+	//Left Side
+	if(relx < -abs(rely)){
+		src.y = src.h * 2;
+	}
+
+	//Bottom
+	if(rely > abs(relx)){
+		src.y = src.h * 0;
+	}
+	if(keystate[SDL_SCANCODE_DOWN]){
+		ypos += movementSpeed * time;
+	}
+	if(keystate[SDL_SCANCODE_UP]){
+		ypos -= movementSpeed * time;
+	}
+	if(keystate[SDL_SCANCODE_LEFT]){
+		xpos -= movementSpeed * time;
+	}
+	if(keystate[SDL_SCANCODE_RIGHT]){
+		xpos += movementSpeed * time;
+	}
+}
+
+void Player::init(){
+	static bool initialized = false;
+	if(initialized){
+		return;
+	}
+	image = graphics::loadTexture(DEFAULT_NAME.c_str());
+	initialized = true;
+}
+
+void Player::del(){
+	graphics::close(image);
 }

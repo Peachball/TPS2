@@ -7,7 +7,6 @@ void logError(std::string s){
 namespace graphics{
 
 	SDL_Window* window         = NULL;
-	SDL_Surface* screenSurface = NULL;
 	SDL_Renderer* render       = NULL;
 
 	//Status: whether or not the sdl stuff is ready for drawing
@@ -37,7 +36,6 @@ namespace graphics{
 			status = false;
 			return -1;
 		}
-		screenSurface = SDL_GetWindowSurface(window);
 
 		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 		if(render == NULL){
@@ -54,7 +52,9 @@ namespace graphics{
 			std::cout<<"SDL not fully initialized...\n";
 			return;
 		}
-		SDL_FillRect(screenSurface, NULL, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+		SDL_SetRenderDrawColor(render, 0, 0, 0, 0);
+
+		SDL_RenderClear(render);
 	}
 
 	void update(){
@@ -63,7 +63,7 @@ namespace graphics{
 			return;
 		}
 
-		SDL_UpdateWindowSurface(window);
+		SDL_RenderPresent(render);
 	}
 
 	void closeSDL(){
@@ -102,7 +102,7 @@ namespace graphics{
 			std::cout<<"Error: "<<SDL_GetError()<<'\n';
 		}
 		else{
-			optimized = SDL_ConvertSurface(target, screenSurface->format, NULL);
+			optimized = SDL_ConvertSurface(target, target->format, NULL);
 			close(target);
 			if(optimized == NULL){
 				std::cout<<"Failed to convert surface. Error: "<<SDL_GetError()<<'\n';
@@ -110,7 +110,7 @@ namespace graphics{
 		}
 		return optimized;
 	}
-	
+
 	SDL_Texture* loadTexture(const char* source){
 		if(!status){
 			std::cout<<"SDL not fully initialized...\n";

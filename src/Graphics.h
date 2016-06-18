@@ -6,8 +6,8 @@
 
 static const char* const RESOURCE_DIR="res/";
 static const char* const WINDOW_TITLE="TPS2";
-static const int SCREEN_WIDTH= 1600;
-static const int SCREEN_HEIGHT = 900;
+static const int SCREEN_WIDTH= 1024;
+static const int SCREEN_HEIGHT = 768;
 
 void logError(std::string s);
 

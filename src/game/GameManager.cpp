@@ -1,9 +1,11 @@
 #include "GameManager.h"
-
+#include "game/GameObject.h"
+#include "game/Player.h"
+#include "game/Bullet.h"
 
 GameManager::GameManager(){
 	//Default settings here
-	Player* p = new Player();
+	Player* p = new Player(this);
 	localPlayer = p;
 	objects.push_back(p);
 }
@@ -15,9 +17,6 @@ GameManager::~GameManager(){
 		objects.pop_back();
 	}
 
-	if(renderThread != NULL){
-		delete renderThread;
-	}
 	if(eventThread != NULL){
 		delete eventThread;
 	}
@@ -25,7 +24,7 @@ GameManager::~GameManager(){
 		delete gameThread;
 	}
 
-	renderThread = gameThread = eventThread = NULL;
+	gameThread = eventThread = NULL;
 }
 
 void GameManager::startGame(){
@@ -35,7 +34,6 @@ void GameManager::startGame(){
 	//Debugging purposes only currently
 	status = GameManager::State::DURING;
 
-	renderThread = new std::thread(&GameManager::renderloop, this);
 	eventThread  = new std::thread(&GameManager::eventHandler, this);
 	gameThread   = new std::thread(&GameManager::manageGame, this);
 
@@ -44,9 +42,11 @@ void GameManager::startGame(){
 void GameManager::endGame(){
 	status = GameManager::State::END;
 
-	renderThread->join();
 	eventThread->join();
 	gameThread->join();
+
+	Player::del();
+	Bullet::del();
 
 	std::cout<<"Game ended successfully\n";
 }
@@ -56,7 +56,16 @@ void GameManager::endGame(){
 //	Collision detection
 //	Manage game status
 void GameManager::manageGame(){
+	Uint32 prevTime = 0;
 	while(status != GameManager::State::END){
+		Uint32 lastTime= SDL_GetTicks();
+		for(GameObject* g : objects){
+			g->gameUpdate(prevTime+1);
+		}
+		render();
+
+		prevTime = SDL_GetTicks() - lastTime;
+		lastTime = SDL_GetTicks();
 	}
 
 }
@@ -82,19 +91,21 @@ void GameManager::eventHandler(){
 
 	std::cout<<"Stopped polling events\n";
 }
-/*
- * Display Current state
-*/
-void GameManager::renderloop(){
-	std::cout<<"Size of render loop "<<objects.size()<<'\n';
+
+void GameManager::render(){
 	graphics::clear();
-	while(status == GameManager::State::DURING){
-		graphics::clear();
-		for(std::vector<GameObject*>::iterator it=objects.begin();
-				it != objects.end(); ++it){
-			(*it)->display();
-		}
-		graphics::update();
+	for(GameObject* it : objects){
+		it->display();
 	}
-	std::cout<<"Exited rendering loop\n";
+	graphics::update();
+}
+
+void GameManager::addObject(GameObject* g){
+	objects.push_back(g);
+}
+
+void GameManager::removeObject(GameObject* g){
+	objects.remove(g);
+	delete g;
+	g = NULL;
 }

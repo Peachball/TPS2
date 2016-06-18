@@ -73,11 +73,18 @@ debug: $(OBJS)
 run: $(BUILD)$(APP_NAME)
 	exec $<
 
-$(BUILD)%.o: %.cpp
-	if ![ -d $(subst /,$(PATH_SEP),$(dir $@))]; then \
-		$(MAKE_DIR) $(subst /,$(PATH_SEP),$(dir $@)) \
-	fi
+$(BUILD)%.o: %.cpp %.h
+	mkdir -p $(dir $@)
+	$(CC) -c $< $(COMPILER_FLAGS) -o $@
+
+$(BUILD)src/Main.o: src/Main.cpp
+	mkdir -p $(dir $@)
 	$(CC) -c $< $(COMPILER_FLAGS) -o $@
 
 clean:
-	$(REM_DIR) $(subst /,$(PATH_SEP),$(BUILD))
+	find . -type f -iname \*.swp -delete
+	rm -R -- build/*
+
+rebuild:
+	make clean
+	make build

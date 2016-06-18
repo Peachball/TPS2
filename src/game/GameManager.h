@@ -1,9 +1,13 @@
 #pragma once
 #include <iostream>
-#include "GameObject.h"
-#include "Player.h"
-#include <vector>
+#include <list>
 #include <thread>
+
+#include "Graphics.h"
+
+//Include files are in cpp file
+class GameObject;
+class Player;
 
 class GameManager{
 	public:
@@ -20,14 +24,17 @@ class GameManager{
 		void startGame();
 		void endGame();
 
+		void addObject(GameObject* g);
+		void removeObject(GameObject* g);
+
 		int status;
 	private:
-		std::vector<GameObject*> objects;
-		void renderloop();
+		std::list<GameObject*> objects;
+
+		void render();
 		void eventHandler();
 		void manageGame();
 
-		std::thread* renderThread;
 		std::thread* eventThread;
 		std::thread* gameThread;
 
