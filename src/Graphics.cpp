@@ -37,7 +37,7 @@ namespace graphics{
 			return -1;
 		}
 
-		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+		render = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
 		if(render == NULL){
 			std::cout<<"Failed to load sdl renderer\n";
 			std::cout<<"Error: "<<SDL_GetError()<<'\n';
