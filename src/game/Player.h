@@ -1,21 +1,28 @@
-#pragma once
-#include "GameObject.h"
+#ifndef _PLAYER_H
+#define _PLAYER_H
+#define _USE_MATH_DEFINES
+#include <math.h>
+#include "game/GameObject.h"
 #include "Graphics.h"
+#include <math.h>
 #include <SDL2/SDL.h>
-
-static const std::string DEFAULT_NAME="player-topdown.png";
+#include "game/Bullet.h"
 
 class Player : public GameObject{
 	public:
-		Player(float x=0, float y=0);
+		Player(GameManager* m, float x=0, float y=0);
 		virtual void display();
 		virtual ~Player();
 		void getInput(const SDL_Event* event);
 
 		virtual void gameUpdate(Uint32 time);
 
+		static void init();
+		static void del();
+
 	private:
-		SDL_Texture *image;
+		static SDL_Texture *image;
+		static const std::string DEFAULT_NAME;
 		SDL_Rect src;
 		SDL_Rect dest;
 
@@ -24,5 +31,9 @@ class Player : public GameObject{
 		float xpos;
 		float ypos;
 
-		float movementSpeed = 4;
+		float movementSpeed = 1;
+
+		void shoot(float direction);
 };
+
+#endif

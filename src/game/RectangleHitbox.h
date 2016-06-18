@@ -1,0 +1,4 @@
+#ifndef _RECTANGLEHITBOX_H
+#define _RECTANGLEHITBOX_H
+
+#endif

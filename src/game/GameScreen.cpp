@@ -6,6 +6,7 @@ GameScreen::GameScreen(GAMEMODE mode){
 }
 
 Screen* GameScreen::update(){
+	manager.handleEvents();
 	switch(gm){
 		case SINGLEPLAYER:
 			break;
