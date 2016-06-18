@@ -15,6 +15,6 @@ if (UNIX)
 endif(UNIX)
 
 if(WIN32)
-	file(GLOB_RECURSE WIN_NATIVES lib/native/windows/x86/*.lib)
+	file(GLOB_RECURSE WIN_NATIVES lib/native/windows/x64/*.lib)
 	target_link_libraries(${PROJECT_NAME} ${WIN_NATIVES})
 endif(WIN32)
