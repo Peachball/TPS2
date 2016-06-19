@@ -1,0 +1,92 @@
+#include "NetworkManager.h"
+
+using asio::ip::udp;
+
+const std::string NetworkManager::SERVICE_NAME = "TPS2";
+const int NetworkManager::PACKET_SIZE = 128;
+
+NetworkManager::NetworkManager(MODE mode){
+	socket = NULL;
+
+	this->mode = mode;
+}
+
+void NetworkManager::connect_to_server(std::string hostname){
+	if(mode == SERVER){
+		logError("Currently running as server, not client");
+		return;
+	}
+	if(socket != NULL){
+		logError("This function was called twice");
+		return;
+	}
+	udp::resolver resolver(io_service);
+	udp::resolver::query query(udp::v4(), hostname, SERVICE_NAME);
+	server_loc = *resolver.resolve(query);
+	socket = new udp::socket(io_service);
+
+	socket->open(udp::v4());
+}
+
+void NetworkManager::send_server_message(Message m){
+	send_server_message(m.m, m.len);
+}
+
+void NetworkManager::send_server_message(char* message, int len){
+	if(mode == SERVER){
+		logError("Currently running as server, not client");
+		return;
+	}
+	if(socket == NULL){
+		logError("Socket was not initialized");
+	}
+	socket->send_to(asio::buffer(message, len), server_loc);
+}
+
+NetworkManager::Message NetworkManager::recieve_server_message(){
+	Message mes;
+	if(mode == SERVER){
+		logError("Currently running as server, not client");
+		return mes;
+	}
+	char buffer[PACKET_SIZE];
+	size_t len = socket->receive_from(asio::buffer(buffer), server_loc);
+
+	mes.m = buffer;
+	mes.len = len;
+	return mes;
+}
+
+
+void NetworkManager::create_local_server(int port){
+	if(mode == CLIENT){
+		logError("Currently running as server, not client");
+		return;
+	}
+	if(socket != NULL){
+		logError("This function was run twice");
+		return;
+	}
+	socket = new udp::socket(io_service, udp::endpoint(udp::v4(), port));
+}
+
+void NetworkManager::recieve_client_message(int size){
+	if(mode == CLIENT){
+		logError("Currently running as server, not client");
+	}
+	if(socket == NULL){
+		logError("Socket not initialized");
+		return;
+	}
+	char recv_buf[PACKET_SIZE];
+	udp::endpoint remote_endpoint;
+	asio::error_code error;
+	socket->receive_from(asio::buffer(recv_buf), remote_endpoint, 0, error);
+
+	if(error && error != asio::error::message_size){
+		throw asio::system_error(error);
+	}
+}
+
+NetworkManager::~NetworkManager(){
+}

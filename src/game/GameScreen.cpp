@@ -2,7 +2,17 @@
 
 GameScreen::GameScreen(GAMEMODE mode){
 	gm = mode;
-	manager.startGame();
+	switch(gm){
+		case SINGLEPLAYER:
+			break;
+		case MULTIPLAYER_CLIENT:
+			break;
+		case MULTIPLAYER_SERVER:
+			break;
+		case TESTER:
+			manager.startGame();
+			break;
+	}
 }
 
 Screen* GameScreen::update(){
@@ -10,7 +20,9 @@ Screen* GameScreen::update(){
 	switch(gm){
 		case SINGLEPLAYER:
 			break;
-		case MULTIPLAYER:
+		case MULTIPLAYER_CLIENT:
+			break;
+		case MULTIPLAYER_SERVER:
 			break;
 		case TESTER:
 			break;

@@ -9,7 +9,22 @@
 int main(int argc, char* argv[]){
 	graphics::create();
 
-	Screen* scr = new GameScreen(TESTER);
+	GAMEMODE default_mode = TESTER;
+
+	if(argc >= 2){
+		//Debug Mode
+		if(argv[1] == "ser"){
+			default_mode = MULTIPLAYER_SERVER;
+		}
+		else if(argv[1] == "cli"){
+			default_mode = MULTIPLAYER_CLIENT;
+		}
+		else{
+			logError("Unknown command");
+		}
+	}
+
+	Screen* scr = new GameScreen(default_mode);
 
 	GUIHandler gui;
 
