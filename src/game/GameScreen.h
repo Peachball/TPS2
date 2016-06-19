@@ -3,6 +3,7 @@
 #include "GameManager.h"
 #include "Screen.h"
 #include "NetworkManager.h"
+#include "Player.h"
 
 enum GAMEMODE{
 	SINGLEPLAYER,

@@ -1,4 +1,6 @@
-#pragma once
+#ifndef _GAMEMANAGER_H
+#define _GAMEMANAGER_H
+#include <algorithm>
 #include <iostream>
 #include <list>
 #include <thread>
@@ -30,6 +32,7 @@ class GameManager{
 		void handleEvents();
 
 		int status;
+		void setLocalPlayer(Player* p);
 	private:
 		std::list<GameObject*> objects;
 
@@ -40,3 +43,5 @@ class GameManager{
 
 		Player* localPlayer;
 };
+
+#endif

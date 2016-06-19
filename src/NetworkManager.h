@@ -16,18 +16,20 @@ class NetworkManager{
 		enum MODE{
 			SERVER, CLIENT
 		};
+
 		NetworkManager(MODE mode);
 		~NetworkManager();
 
 		//Server stuff
 		void create_local_server(int port);
 		void broadCastMessage(char* message, unsigned int len);
-
 		//Warning: blocks thread
-		void receive_client_message(int size);
+		void receive_client_message();
+		void startClientMessageThreads();
 
 		//Client stuff
 		void connect_to_server(std::string hostname);
+		void send_server_message(std::string message);
 		void send_server_message(Message m);
 		void send_server_message(char* message, unsigned int len);
 		Message receive_server_message();
@@ -35,6 +37,10 @@ class NetworkManager{
 		static const int PACKET_SIZE;
 		static const std::string SERVICE_NAME;
 	private:
+
+		bool threadState = false;
+
+		void listen();
 
 		MODE mode;
 		asio::ip::udp::socket* socket;

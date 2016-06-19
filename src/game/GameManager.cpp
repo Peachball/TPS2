@@ -4,10 +4,14 @@
 #include "game/Bullet.h"
 
 GameManager::GameManager(){
-	//Default settings here
-	Player* p = new Player(this);
+}
+
+void GameManager::setLocalPlayer(Player* p){
 	localPlayer = p;
-	objects.push_back(p);
+	//Test if p is not in objects
+	if(std::find(objects.begin(), objects.end(), p) == objects.end()){
+		objects.push_back(p);
+	}
 }
 
 GameManager::~GameManager(){
@@ -70,7 +74,9 @@ void GameManager::handleEvents(){
 	std::cout<<"Polling events\n";
 	while(status != GameManager::State::END){
 		while(SDL_PollEvent(&event)){
-			localPlayer->getInput(&event);
+			if(localPlayer != NULL){
+				localPlayer->getInput(&event);
+			}
 
 			switch(event.type){
 				case SDL_WINDOWEVENT:
