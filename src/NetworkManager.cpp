@@ -7,8 +7,10 @@ const int NetworkManager::PACKET_SIZE = 128;
 
 NetworkManager::NetworkManager(MODE mode){
 	socket = NULL;
+	listenThread = NULL;
 
 	this->mode = mode;
+	_buffer = new char[PACKET_SIZE];
 }
 
 
@@ -83,6 +85,7 @@ void NetworkManager::create_local_server(int port){
 void NetworkManager::receive_client_message(){
 	if(mode == CLIENT){
 		logError("Currently running as server, not client");
+		return;
 	}
 	if(socket == NULL){
 		logError("Socket not initialized");
@@ -107,26 +110,53 @@ void NetworkManager::broadCastMessage(char* message, unsigned int size){
 	}
 }
 
+void yelp(const asio::error_code& error, std::size_t bytes){
+	std::cout<<"Yelp!\n";
+}
+
+void NetworkManager::handleMessages(const asio::error_code &error,
+		std::size_t bytes){
+	std::cout<<"Heard 'em\n";
+	listen();
+}
+
 void NetworkManager::listen(){
+	std::cout<<"Listening\n";
+	socket->async_receive_from(asio::buffer(_buffer, PACKET_SIZE), _endpoint, 0,
+			std::bind(&NetworkManager::handleMessages, this,
+				std::placeholders::_1,
+				std::placeholders::_2));
+	std::cout<<"Done defining handler\n";
+}
+
+void NetworkManager::poll_handlers(){
 	while(threadState){
-		receive_client_message();
+		io_service.poll();
 	}
 }
 
 void NetworkManager::startClientMessageThreads(){
+	io_service.reset();
+	listen();
 	threadState = true;
-	listenThread = new std::thread(&NetworkManager::listen, this);
+	listenThread = new std::thread(&NetworkManager::poll_handlers, this);
 }
 
 NetworkManager::~NetworkManager(){
 	io_service.stop();
 	threadState = false;
+	if(_buffer != NULL){
+		delete [] _buffer;
+		_buffer = NULL;
+	}
 	if(listenThread != NULL){
 		listenThread->join();
 		delete listenThread;
+		listenThread = NULL;
 	}
 	if(socket != NULL){
 		socket->close();
 		delete socket;
+		socket = NULL;
 	}
 }

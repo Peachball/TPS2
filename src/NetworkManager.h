@@ -5,6 +5,7 @@
 #include <asio.hpp>
 #include <string>
 #include <list>
+#include <memory>
 #include <thread>
 #include "Graphics.h"
 
@@ -27,6 +28,7 @@ class NetworkManager{
 		//Warning: blocks thread
 		void receive_client_message();
 		void startClientMessageThreads();
+		void poll_handlers();
 
 		//Client stuff
 		void connect_to_server(std::string hostname);
@@ -44,18 +46,20 @@ class NetworkManager{
 		bool threadState = false;
 
 		void listen();
+		char* _buffer;
+		void handleMessages(const asio::error_code& error, std::size_t bytes);
 
 		MODE mode;
 		asio::ip::udp::socket* socket;
 
 		//Server variables
 		std::list<asio::ip::udp::endpoint> clients;
+		asio::ip::udp::endpoint _endpoint;
 
 		//Client variables
 		asio::ip::udp::endpoint server_loc;
 
 		asio::io_service io_service;
-
 		std::list<Message> messages;
 };
 
