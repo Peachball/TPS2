@@ -2,7 +2,7 @@
 
 using asio::ip::udp;
 
-const std::string NetworkManager::SERVICE_NAME = "TPS2";
+const std::string NetworkManager::SERVICE_NAME = "2000";
 const int NetworkManager::PACKET_SIZE = 128;
 
 NetworkManager::NetworkManager(MODE mode){
@@ -45,7 +45,10 @@ void NetworkManager::send_server_message(char* message, unsigned int len){
 	if(socket == NULL){
 		logError("Socket was not initialized");
 	}
+	std::cout<<"Sending server message: "<<message<<'\n';
+	std::cout<<"Server address: "<<server_loc.address()<<'\n';
 	socket->send_to(asio::buffer(message, len), server_loc);
+	std::cout<<"Sent!\n";
 }
 
 NetworkManager::Message NetworkManager::receive_server_message(){
@@ -56,6 +59,8 @@ NetworkManager::Message NetworkManager::receive_server_message(){
 	}
 	char buffer[PACKET_SIZE];
 	size_t len = socket->receive_from(asio::buffer(buffer), server_loc);
+
+	std::cout<<"Server sent:"<<buffer<<'\n';
 
 	mes.m = buffer;
 	mes.len = len;
@@ -86,6 +91,7 @@ void NetworkManager::receive_client_message(){
 	char recv_buf[PACKET_SIZE];
 	udp::endpoint remote_endpoint;
 	asio::error_code error;
+	std::cout<<"Waiting for messages...\n";
 	socket->receive_from(asio::buffer(recv_buf), remote_endpoint, 0, error);
 
 	std::cout<<"Client Sent Message:"<<recv_buf<<'\n';
@@ -109,9 +115,16 @@ void NetworkManager::listen(){
 
 void NetworkManager::startClientMessageThreads(){
 	threadState = true;
+	listenThread = new std::thread(&NetworkManager::listen, this);
 }
 
 NetworkManager::~NetworkManager(){
+	io_service.stop();
+	threadState = false;
+	if(listenThread != NULL){
+		listenThread->join();
+		delete listenThread;
+	}
 	if(socket != NULL){
 		socket->close();
 		delete socket;

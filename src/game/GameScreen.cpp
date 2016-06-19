@@ -9,8 +9,10 @@ GameScreen::GameScreen(GAMEMODE mode){
 		case MULTIPLAYER_CLIENT:
 			try{
 				net = new NetworkManager(NetworkManager::MODE::CLIENT);
-				net->connect_to_server("192.168.0.3");
-				net->send_server_message("hi!");
+				net->connect_to_server("localhost");
+				for(int i = 0; i < 100; i++){
+					net->send_server_message("hi!");
+				}
 			}
 			catch(std::exception &e){
 				std::cout<<e.what()<<'\n';
@@ -23,6 +25,7 @@ GameScreen::GameScreen(GAMEMODE mode){
 				try{
 					net = new NetworkManager(NetworkManager::MODE::SERVER);
 					net->create_local_server(2000);
+					net->startClientMessageThreads();
 				}
 				catch(std::exception &e){
 					std::cout<<e.what()<<'\n';

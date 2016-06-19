@@ -5,6 +5,7 @@
 #include <asio.hpp>
 #include <string>
 #include <list>
+#include <thread>
 #include "Graphics.h"
 
 class NetworkManager{
@@ -38,6 +39,8 @@ class NetworkManager{
 		static const std::string SERVICE_NAME;
 	private:
 
+		std::thread* listenThread;
+
 		bool threadState = false;
 
 		void listen();
@@ -53,7 +56,7 @@ class NetworkManager{
 
 		asio::io_service io_service;
 
-		std::vector<std::string> messages;
+		std::list<Message> messages;
 };
 
 #endif
