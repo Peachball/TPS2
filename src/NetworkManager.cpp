@@ -11,6 +11,7 @@ NetworkManager::NetworkManager(MODE mode){
 	this->mode = mode;
 }
 
+
 void NetworkManager::connect_to_server(std::string hostname){
 	if(mode == SERVER){
 		logError("Currently running as server, not client");
@@ -32,7 +33,7 @@ void NetworkManager::send_server_message(Message m){
 	send_server_message(m.m, m.len);
 }
 
-void NetworkManager::send_server_message(char* message, int len){
+void NetworkManager::send_server_message(char* message, unsigned int len){
 	if(mode == SERVER){
 		logError("Currently running as server, not client");
 		return;
@@ -43,7 +44,7 @@ void NetworkManager::send_server_message(char* message, int len){
 	socket->send_to(asio::buffer(message, len), server_loc);
 }
 
-NetworkManager::Message NetworkManager::recieve_server_message(){
+NetworkManager::Message NetworkManager::receive_server_message(){
 	Message mes;
 	if(mode == SERVER){
 		logError("Currently running as server, not client");
@@ -70,7 +71,7 @@ void NetworkManager::create_local_server(int port){
 	socket = new udp::socket(io_service, udp::endpoint(udp::v4(), port));
 }
 
-void NetworkManager::recieve_client_message(int size){
+void NetworkManager::receive_client_message(int size){
 	if(mode == CLIENT){
 		logError("Currently running as server, not client");
 	}
@@ -83,10 +84,22 @@ void NetworkManager::recieve_client_message(int size){
 	asio::error_code error;
 	socket->receive_from(asio::buffer(recv_buf), remote_endpoint, 0, error);
 
+	std::cout<<recv_buf<<'\n';
 	if(error && error != asio::error::message_size){
 		throw asio::system_error(error);
 	}
 }
 
+void NetworkManager::broadCastMessage(char* message, unsigned int size){
+	for(udp::endpoint e : clients){
+		asio::error_code error;
+		socket->send_to(asio::buffer(message, size), e, 0, error);
+	}
+}
+
 NetworkManager::~NetworkManager(){
+	if(socket != NULL){
+		socket->close();
+		delete socket;
+	}
 }

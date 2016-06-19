@@ -57,3 +57,11 @@ void Bullet::del(){
 	graphics::close(surface);
 	std::cout<<"Bullet deleted\n";
 }
+
+NetworkManager::Message Bullet::serialize(){
+	NetworkManager::Message m;
+	return m;
+}
+
+void Bullet::unserialize(NetworkManager::Message m){
+}

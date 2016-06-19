@@ -2,6 +2,7 @@
 #define _GAMEOBJECT_H
 #include "Graphics.h"
 #include "game/GameManager.h"
+#include "NetworkManager.h"
 
 class GameObject{
 	public:
@@ -11,11 +12,16 @@ class GameObject{
 		virtual void gameUpdate(Uint32 time)=0;
 		virtual ~GameObject(){};
 
+		virtual NetworkManager::Message serialize()=0;
+
+		virtual void unserialize(NetworkManager::Message m)=0;
+
 		static void init();
 		static void del();
 
 	protected:
 		GameManager* manager;
+		int id;
 };
 
 #endif

@@ -13,10 +13,10 @@ int main(int argc, char* argv[]){
 
 	if(argc >= 2){
 		//Debug Mode
-		if(argv[1] == "ser"){
+		if(std::string(argv[1]) == "ser"){
 			default_mode = MULTIPLAYER_SERVER;
 		}
-		else if(argv[1] == "cli"){
+		else if(std::string(argv[1]) == "cli"){
 			default_mode = MULTIPLAYER_CLIENT;
 		}
 		else{

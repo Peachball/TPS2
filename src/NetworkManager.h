@@ -21,15 +21,16 @@ class NetworkManager{
 
 		//Server stuff
 		void create_local_server(int port);
+		void broadCastMessage(char* message, unsigned int len);
 
 		//Warning: blocks thread
-		void recieve_client_message(int size);
+		void receive_client_message(int size);
 
 		//Client stuff
 		void connect_to_server(std::string hostname);
 		void send_server_message(Message m);
-		void send_server_message(char* message, int len);
-		Message recieve_server_message();
+		void send_server_message(char* message, unsigned int len);
+		Message receive_server_message();
 
 		static const int PACKET_SIZE;
 		static const std::string SERVICE_NAME;

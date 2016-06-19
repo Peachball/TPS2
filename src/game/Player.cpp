@@ -137,3 +137,12 @@ void Player::init(){
 void Player::del(){
 	graphics::close(image);
 }
+
+NetworkManager::Message Player::serialize(){
+	NetworkManager::Message m;
+	return m;
+}
+
+void Player::unserialize(NetworkManager::Message m){
+
+}

@@ -1,6 +1,8 @@
-#pragma once
+#ifndef _GAMESCREEN_H
+#define _GAMESCREEN_H
 #include "GameManager.h"
 #include "Screen.h"
+#include "NetworkManager.h"
 
 enum GAMEMODE{
 	SINGLEPLAYER,
@@ -16,6 +18,9 @@ class GameScreen: public Screen{
 		virtual ~GameScreen();
 
 	private:
+		NetworkManager* net;
 		GameManager manager;
 		GAMEMODE gm;
 };
+
+#endif

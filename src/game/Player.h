@@ -17,6 +17,9 @@ class Player : public GameObject{
 
 		virtual void gameUpdate(Uint32 time);
 
+		virtual NetworkManager::Message serialize();
+		virtual void unserialize(NetworkManager::Message m);
+
 		static void init();
 		static void del();
 
