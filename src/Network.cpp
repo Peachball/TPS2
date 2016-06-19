@@ -27,7 +27,7 @@ void Network::connect_to_server(std::string hostname){
 }
 
 void Network::send_server_message(char * message, int len){
-	if(server_loc == NULL || client == NULL){
+	if(client == NULL){
 		logError("server location was deallocated, or the client wasn't"
 				"created");
 		return;

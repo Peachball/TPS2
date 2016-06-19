@@ -6,7 +6,7 @@
 #include "StartScreen.h"
 #include "gui/GUIHandler.h"
 
-int main(){
+int main(int argc, char* argv[]){
 	graphics::create();
 
 	Screen* scr = new GameScreen(TESTER);
