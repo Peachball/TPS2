@@ -144,6 +144,11 @@ void NetworkManager::startClientMessageThreads(){
 	listenThread = new std::thread(&NetworkManager::poll_handlers, this);
 }
 
+void NetworkManager::pass_handler(void (*handler)(const asio::error_code& error, std::size_t bytes)){
+	socket->async_receive_from(asio::buffer(_buffer, PACKET_SIZE), _endpoint, 0, handler);
+}
+
+
 NetworkManager::~NetworkManager(){
 	io_service.stop();
 	threadState = false;

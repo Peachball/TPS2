@@ -29,6 +29,8 @@ class NetworkManager{
 		//Warning: blocks thread
 		void receive_client_message();
 		void startClientMessageThreads();
+		void pass_handler(void (*handler)(const asio::error_code& error, std::size_t bytes));
+
 
 		//Client stuff
 		void connect_to_server(std::string hostname);
