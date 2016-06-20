@@ -25,4 +25,10 @@ endif(UNIX)
 if(WIN32)
 	file(GLOB_RECURSE WIN_NATIVES lib/native/windows/x64/*.lib)
 	target_link_libraries(${PROJECT_NAME} ${WIN_NATIVES})
+	set_property(TARGET ${PROJECT_NAME} PROPERTY C_STANDARD 99)
+
+	
+	#Assuming you are running windows 10:
+	add_definitions(-D_WIN32_WINNT=0x0A00)
+	add_definitions(-DWINVER=0x0A00)
 endif(WIN32)
