@@ -5,6 +5,7 @@
 #include <list>
 #include <thread>
 
+#include "NetworkManager.h"
 #include "Graphics.h"
 
 //Include files are in cpp file
@@ -33,7 +34,11 @@ class GameManager{
 
 		int status;
 		void setLocalPlayer(Player* p);
+
+		void broadcast_gamestate(NetworkManager* net);
+		void update_gamestate(NetworkManager::Message m);
 	private:
+		int curId;
 		std::list<GameObject*> objects;
 
 		void render();

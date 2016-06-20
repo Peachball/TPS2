@@ -24,11 +24,11 @@ class NetworkManager{
 
 		//Server stuff
 		void create_local_server(int port);
+		void broadCastMessage(Message m);
 		void broadCastMessage(char* message, unsigned int len);
 		//Warning: blocks thread
 		void receive_client_message();
 		void startClientMessageThreads();
-		void poll_handlers();
 
 		//Client stuff
 		void connect_to_server(std::string hostname);
@@ -39,17 +39,20 @@ class NetworkManager{
 
 		static const int PACKET_SIZE;
 		static const std::string SERVICE_NAME;
+
+		MODE mode;
 	private:
-
+		void poll_handlers();
 		std::thread* listenThread;
-
 		bool threadState = false;
 
 		void listen();
 		char* _buffer;
+
+
+		//Debugging purposes only
 		void handleMessages(const asio::error_code& error, std::size_t bytes);
 
-		MODE mode;
 		asio::ip::udp::socket* socket;
 
 		//Server variables

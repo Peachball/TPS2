@@ -103,6 +103,10 @@ void NetworkManager::receive_client_message(){
 	}
 }
 
+void NetworkManager::broadCastMessage(Message m){
+	broadCastMessage(m.m, m.len);
+}
+
 void NetworkManager::broadCastMessage(char* message, unsigned int size){
 	for(udp::endpoint e : clients){
 		asio::error_code error;
@@ -116,17 +120,15 @@ void yelp(const asio::error_code& error, std::size_t bytes){
 
 void NetworkManager::handleMessages(const asio::error_code &error,
 		std::size_t bytes){
-	std::cout<<"Heard 'em\n";
+	std::cout<<"Message: "<<std::string(_buffer, bytes)<<"\n";
 	listen();
 }
 
 void NetworkManager::listen(){
-	std::cout<<"Listening\n";
 	socket->async_receive_from(asio::buffer(_buffer, PACKET_SIZE), _endpoint, 0,
 			std::bind(&NetworkManager::handleMessages, this,
 				std::placeholders::_1,
 				std::placeholders::_2));
-	std::cout<<"Done defining handler\n";
 }
 
 void NetworkManager::poll_handlers(){

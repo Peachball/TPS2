@@ -4,12 +4,14 @@
 #include "game/Bullet.h"
 
 GameManager::GameManager(){
+	curId = 0;
 }
 
 void GameManager::setLocalPlayer(Player* p){
 	localPlayer = p;
 	//Test if p is not in objects
 	if(std::find(objects.begin(), objects.end(), p) == objects.end()){
+		p->id = curId++;
 		objects.push_back(p);
 	}
 }
@@ -102,6 +104,7 @@ void GameManager::render(){
 }
 
 void GameManager::addObject(GameObject* g){
+	g->id = curId++;
 	objects.push_back(g);
 }
 
@@ -109,4 +112,33 @@ void GameManager::removeObject(GameObject* g){
 	objects.remove(g);
 	delete g;
 	g = NULL;
+}
+
+void GameManager::broadcast_gamestate(NetworkManager* net){
+	if(net->mode != NetworkManager::SERVER){
+		logError("manager is not in correct mode lol");
+		return;
+	}
+	for(GameObject* g : objects){
+		net->broadCastMessage(g->serialize());
+	}
+}
+
+void GameManager::update_gamestate(NetworkManager::Message m){
+	if(m.len <= 4){
+		logError("Message is corrrupted");
+		return;
+	}
+	//Convert 4 bytes to uint32
+	//Big endian
+	uint32_t temp_id = 0;
+	temp_id = (m.m[0] << 24) | (m.m[1] << 16) | (m.m[2] << 8) |  (m.m[3]);
+
+	//Linear search to find object with id
+	for(GameObject* g : objects){
+		if(g->id == temp_id){
+			g->unserialize(m);
+			break;
+		}
+	}
 }
