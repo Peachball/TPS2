@@ -4,7 +4,6 @@
 #include "Graphics.h"
 #include "game/GameScreen.h"
 #include "StartScreen.h"
-#include "gui/GUIHandler.h"
 
 int main(int argc, char* argv[]){
 	graphics::create();
@@ -25,8 +24,6 @@ int main(int argc, char* argv[]){
 	}
 
 	Screen* scr = new GameScreen(default_mode);
-
-	GUIHandler gui;
 
 	Screen* before = scr;
 	while( scr != NULL ){

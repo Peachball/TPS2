@@ -1,17 +1,20 @@
-#pragma once
+#ifndef _GUIHANDLER_H
+#define _GUIHANDLER_H
 #include <thread>
 #include "Graphics.h"
 
 class GUIHandler{
 	public:
 		enum ListenState{
-			DELETE,
+			DEL,
 			SAME
 		};
 
+		GUIHandler();
+
 		void start();
 		void stop();
-		~GUIHandler();
+		virtual ~GUIHandler();
 		void addEventListener();
 
 	private:
@@ -19,3 +22,5 @@ class GUIHandler{
 		int eventlistSize=100;
 		void updateEventList();
 };
+
+#endif
