@@ -36,7 +36,7 @@ void NetworkManager::send_server_message(std::string message){
 }
 
 void NetworkManager::send_server_message(Message m){
-	send_server_message(m.m.get(), m.len);
+	send_server_message(m.m, m.len);
 }
 
 void NetworkManager::send_server_message(char* message, unsigned int len){
@@ -53,16 +53,16 @@ void NetworkManager::send_server_message(char* message, unsigned int len){
 	std::cout<<"Sent!\n";
 }
 
-NetworkManager::Message NetworkManager::receive_server_message(){
+NetworkManager::Message NetworkManager::receive_server_message(char* buffer){
 	Message mes;
 	if(mode == SERVER){
 		logError("Currently running as server, not client");
 		return mes;
 	}
-	mes.m = std::shared_ptr<char>(new char[PACKET_SIZE]);
-	size_t len = socket->receive_from(asio::buffer(mes.m.get(), PACKET_SIZE), server_loc);
+	mes.m = buffer;
+	size_t len = socket->receive_from(asio::buffer(mes.m, PACKET_SIZE), server_loc);
 
-	std::cout<<"Server sent:"<<mes.m.get()<<'\n';
+	std::cout<<"Server sent:"<<mes.m<<'\n';
 
 	mes.len = len;
 	return mes;
@@ -102,11 +102,11 @@ void NetworkManager::receive_client_message(){
 	}
 }
 
-void NetworkManager::broadCastMessage(Message m){
-	broadCastMessage(m.m.get(), m.len);
+void NetworkManager::broadcastMessage(Message m){
+	broadcastMessage(m.m, m.len);
 }
 
-void NetworkManager::broadCastMessage(char* message, unsigned int size){
+void NetworkManager::broadcastMessage(char* message, unsigned int size){
 	for(udp::endpoint e : clients){
 		asio::error_code error;
 		socket->send_to(asio::buffer(message, size), e, 0, error);
@@ -120,6 +120,8 @@ void yelp(const asio::error_code& error, std::size_t bytes){
 void NetworkManager::handleMessages(const asio::error_code &error,
 		std::size_t bytes){
 	std::cout<<"Message: "<<std::string(_buffer, bytes)<<"\n";
+	std::cout<<"Address Location: "<<_endpoint.address()<<'\n';
+	add_client(_endpoint);
 	listen();
 }
 
@@ -137,16 +139,24 @@ void NetworkManager::poll_handlers(){
 }
 
 void NetworkManager::startClientMessageThreads(){
-	io_service.reset();
-	listen();
 	threadState = true;
 	listenThread = new std::thread(&NetworkManager::poll_handlers, this);
 }
 
-void NetworkManager::pass_handler(void (*handler)(const asio::error_code& error, std::size_t bytes)){
-	socket->async_receive_from(asio::buffer(_buffer, PACKET_SIZE), _endpoint, 0, handler);
+void NetworkManager::add_client(udp::endpoint e){
+	for(udp::endpoint cli : clients){
+		if(cli.address() == e.address()){
+			logError("Already added");
+			return;
+		}
+	}
+	//If e is not already added
+	clients.push_back(e);
 }
 
+void NetworkManager::reset(){
+	io_service.reset();
+}
 
 NetworkManager::~NetworkManager(){
 	io_service.stop();

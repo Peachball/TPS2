@@ -2,6 +2,7 @@
 
 GameObject::GameObject(GameManager* m){
 	manager = m;
+	id = 0;
 }
 
 void GameObject::init(){

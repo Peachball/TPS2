@@ -20,7 +20,7 @@
 class NetworkManager{
 	public:
 		struct Message{
-			std::shared_ptr<char> m;
+			char* m;
 			size_t len;
 		};
 		enum MODE{
@@ -32,12 +32,12 @@ class NetworkManager{
 
 		//Server stuff
 		void create_local_server(int port);
-		void broadCastMessage(Message m);
-		void broadCastMessage(char* message, unsigned int len);
+		void broadcastMessage(Message m);
+		void broadcastMessage(char* message, unsigned int len);
 		//Warning: blocks thread
 		void receive_client_message();
 		void startClientMessageThreads();
-		void pass_handler(void (*handler)(const asio::error_code& error, std::size_t bytes));
+		void add_client(asio::ip::udp::endpoint e);
 
 
 		//Client stuff
@@ -45,25 +45,29 @@ class NetworkManager{
 		void send_server_message(std::string message);
 		void send_server_message(Message m);
 		void send_server_message(char* message, unsigned int len);
-		Message receive_server_message();
+		Message receive_server_message(char* buffer);
 
 		static const int PACKET_SIZE;
 		static const std::string SERVICE_NAME;
 
 		MODE mode;
+
+		asio::ip::udp::socket* socket;
+		void listen();
+
+		void reset();
+
 	private:
 		void poll_handlers();
 		std::thread* listenThread;
 		bool threadState = false;
 
-		void listen();
 		char* _buffer;
 
 
 		//Debugging purposes only
 		void handleMessages(const asio::error_code& error, std::size_t bytes);
 
-		asio::ip::udp::socket* socket;
 
 		//Server variables
 		std::list<asio::ip::udp::endpoint> clients;

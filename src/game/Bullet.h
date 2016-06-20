@@ -14,14 +14,14 @@ class Bullet : public GameObject{
 		virtual void gameUpdate(Uint32 time);
 		virtual ~Bullet();
 
-		virtual NetworkManager::Message serialize();
+		virtual NetworkManager::Message serialize(char* buffer);
 		virtual void unserialize(NetworkManager::Message m);
 
 		static void init();
 		static void del();
 
 	private:
-		static const int BULLETDATA_SIZE=12;
+		static const int BULLETDATA_SIZE=13;
 		static std::mutex imageLock;
 		static SDL_Texture *image;
 		static SDL_Surface* surface;

@@ -11,21 +11,22 @@
 
 class Player : public GameObject{
 	public:
-		Player(GameManager* m, float x=0, float y=0);
+		Player(GameManager* m, float x=400, float y=400);
 		virtual void display();
 		virtual ~Player();
 		void getInput(const SDL_Event* event);
 
 		virtual void gameUpdate(Uint32 time);
 
-		virtual NetworkManager::Message serialize();
+		virtual NetworkManager::Message serialize(char* buffer);
 		virtual void unserialize(NetworkManager::Message m);
 
 		static void init();
 		static void del();
+		bool localPlayer=false;
 
 	private:
-		static const int PLAYERDATA_SIZE = 12;
+		static const int PLAYERDATA_SIZE = 13;
 		static SDL_Texture *image;
 		static const std::string DEFAULT_NAME;
 		SDL_Rect src;
@@ -39,6 +40,7 @@ class Player : public GameObject{
 		float movementSpeed = 1;
 
 		void shoot(float direction);
+
 };
 
 #endif

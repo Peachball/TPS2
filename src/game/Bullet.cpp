@@ -31,7 +31,6 @@ void Bullet::display(){
 }
 
 void Bullet::gameUpdate(Uint32 time){
-	this->unserialize(this->serialize());
 	xpos += speed * time * cos(direction);
 	ypos += speed * time * sin(direction);
 }
@@ -59,13 +58,17 @@ void Bullet::del(){
 	std::cout<<"Bullet deleted\n";
 }
 
-NetworkManager::Message Bullet::serialize(){
+NetworkManager::Message Bullet::serialize(char* buffer){
 	NetworkManager::Message m;
-	m.m = std::shared_ptr<char>(new char[BULLETDATA_SIZE]);
+	m.m = buffer;
 	m.len = BULLETDATA_SIZE;
-	char* data = m.m.get();
+	char* data = m.m;
 	memcpy(data, &id, sizeof(id));
 	data += sizeof(id);
+
+	char type = BULLET;
+	memcpy(data, &type, sizeof(type));
+	data += type;
 	memcpy(data, &xpos, sizeof(xpos));
 	data += sizeof(xpos);
 	memcpy(data, &ypos, sizeof(ypos));
@@ -77,7 +80,7 @@ void Bullet::unserialize(NetworkManager::Message m){
 		logError("Something has gone horribly wrong");
 		return;
 	}
-	char* data = m.m.get();
+	char* data = m.m;
 	uint32_t temp_id;
 	memcpy(&temp_id, data, sizeof(temp_id));
 	data += sizeof(temp_id);
@@ -85,6 +88,15 @@ void Bullet::unserialize(NetworkManager::Message m){
 		logError("Id mismatch for bullet");
 		return;
 	}
+
+	char type;
+	memcpy(&type, data, sizeof(type));
+
+	if(type != BULLET){
+		logError("Not a bullet, bro");
+		return;
+	}
+	data += sizeof(type);
 
 	memcpy(&xpos, data, sizeof(xpos));
 	data += sizeof(xpos);

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <list>
 #include <thread>
+#include <memory>
 
 #include "NetworkManager.h"
 #include "Graphics.h"
@@ -35,7 +36,7 @@ class GameManager{
 		int status;
 		void setLocalPlayer(Player* p);
 
-		void game_handler(const asio::error_code& error, std::size_t bytes);
+		void game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes);
 
 		void broadcast_gamestate(NetworkManager* net);
 		void update_gamestate(NetworkManager::Message m);

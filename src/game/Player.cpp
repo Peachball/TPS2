@@ -79,7 +79,9 @@ void Player::shoot(float direction){
 }
 
 void Player::gameUpdate(Uint32 time){
-	this->unserialize(this->serialize());
+	if(!localPlayer){
+		return;
+	}
 	//Detect mouse button status
 	int x;
 	int y;
@@ -139,13 +141,16 @@ void Player::del(){
 	graphics::close(image);
 }
 
-NetworkManager::Message Player::serialize(){
+NetworkManager::Message Player::serialize(char* buffer){
 	NetworkManager::Message m;
-	m.m = std::shared_ptr<char>(new char[PLAYERDATA_SIZE]);
+	m.m = buffer;
 	m.len = PLAYERDATA_SIZE;
-	char* data = m.m.get();
+	char* data = m.m;
 	memcpy(data, &id, sizeof(id));
 	data += sizeof(id);
+	char type = PLAYER;
+	memcpy(data, &type, sizeof(type));
+	data += sizeof(type);
 	memcpy(data, &xpos, sizeof(xpos));
 	data += sizeof(xpos);
 	memcpy(data, &ypos, sizeof(ypos));
@@ -157,17 +162,25 @@ void Player::unserialize(NetworkManager::Message m){
 		logError("Corrupted udp packet");
 		return;
 	}
-	char* data = m.m.get();
+	char* data = m.m;
 
 	uint32_t test_id;
-	memcpy(&test_id, data, sizeof(uint32_t));
+	memcpy(&test_id, data, sizeof(test_id));
+	data += sizeof(test_id);
 	if(test_id != id){
 		logError("This is not the player you are looking for");
 	}
 
+	char type;
+	memcpy(&type, data, sizeof(type));
+	data += sizeof(type);
+
+	if(type != PLAYER){
+		logError("Not a player, bro");
+	}
+
 	//Outline:
 	//		Store X and Y position (and thats it)
-	data += sizeof(test_id);
 	memcpy(&xpos, data, sizeof(xpos));
 	data += sizeof(xpos);
 	memcpy(&ypos, data, sizeof(ypos));

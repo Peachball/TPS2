@@ -14,6 +14,10 @@ typedef unsigned __int64 uint64_t;
 #include "game/GameManager.h"
 #include "NetworkManager.h"
 
+enum GAMEOBJECTS{
+	PLAYER, BULLET
+};
+
 class GameObject{
 	public:
 		GameObject(GameManager* m);
@@ -24,7 +28,7 @@ class GameObject{
 		virtual ~GameObject(){};
 
 		//Includes the gamobject id
-		virtual NetworkManager::Message serialize()=0;
+		virtual NetworkManager::Message serialize(char* buffer)=0;
 
 		virtual void unserialize(NetworkManager::Message m)=0;
 

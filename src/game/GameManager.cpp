@@ -4,11 +4,15 @@
 #include "game/Bullet.h"
 
 GameManager::GameManager(){
-	curId = 0;
+	curId = 1;
 }
 
 void GameManager::setLocalPlayer(Player* p){
+	if(localPlayer != NULL){
+		localPlayer->localPlayer = false;
+	}
 	localPlayer = p;
+	p->localPlayer=true;
 	//Test if p is not in objects
 	if(std::find(objects.begin(), objects.end(), p) == objects.end()){
 		p->id = curId++;
@@ -73,26 +77,22 @@ void GameManager::manageGame(){
 
 void GameManager::handleEvents(){
 	SDL_Event event;
-	std::cout<<"Polling events\n";
-	while(status != GameManager::State::END){
-		while(SDL_PollEvent(&event)){
-			if(localPlayer != NULL){
-				localPlayer->getInput(&event);
-			}
+	while(SDL_PollEvent(&event)){
+		if(localPlayer != NULL){
+			localPlayer->getInput(&event);
+		}
 
-			switch(event.type){
-				case SDL_WINDOWEVENT:
-					switch(event.window.event){
-						case SDL_WINDOWEVENT_CLOSE:
-							status = GameManager::State::END;
-							break;
-					}
-					break;
-			}
+		switch(event.type){
+			case SDL_WINDOWEVENT:
+				switch(event.window.event){
+					case SDL_WINDOWEVENT_CLOSE:
+						status = GameManager::State::END;
+						break;
+				}
+				break;
 		}
 	}
 
-	std::cout<<"Stopped polling events\n";
 }
 
 void GameManager::render(){
@@ -104,7 +104,9 @@ void GameManager::render(){
 }
 
 void GameManager::addObject(GameObject* g){
-	g->id = curId++;
+	if(g->id == 0){
+		g->id = curId++;
+	}
 	objects.push_back(g);
 }
 
@@ -115,13 +117,17 @@ void GameManager::removeObject(GameObject* g){
 }
 
 void GameManager::broadcast_gamestate(NetworkManager* net){
+	char* buffer = new char[NetworkManager::PACKET_SIZE];
 	if(net->mode != NetworkManager::SERVER){
 		logError("manager is not in correct mode lol");
 		return;
 	}
 	for(GameObject* g : objects){
-		net->broadCastMessage(g->serialize());
+		net->broadcastMessage(g->serialize(buffer));
 	}
+
+	delete [] buffer;
+	buffer = NULL;
 }
 
 void GameManager::update_gamestate(NetworkManager::Message m){
@@ -129,20 +135,58 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 		logError("Message is corrrupted");
 		return;
 	}
-	//Convert 4 bytes to uint32
-	//Big endian
 	uint32_t temp_id = 0;
-	memcpy(&temp_id, m.m.get(), sizeof(temp_id));
+	memcpy(&temp_id, m.m, sizeof(temp_id));
 
 	//Linear search to find object with id
 	for(GameObject* g : objects){
 		if(g->id == temp_id){
 			g->unserialize(m);
-			break;
+			return;
 		}
+	}
+
+	//Generate the object because if wasn't found
+	char type;
+	memcpy(&type, m.m+sizeof(temp_id), sizeof(type));
+	switch(type){
+		case PLAYER:
+			{
+				Player *p = new Player(this);
+				p->id = temp_id;
+				p->unserialize(m);
+				addObject(p);
+			}
+			break;
+		case BULLET:
+			{
+				Bullet* b = new Bullet(this);
+				b->id = temp_id;
+				b->unserialize(m);
+				addObject(b);
+			}
+			break;
 	}
 }
 
-void GameManager::game_handler(const asio::error_code& error, std::size_t bytes){
+void GameManager::game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes){
+	static char* _buffer;
+	if(_buffer == NULL){
+		_buffer = new char[NetworkManager::PACKET_SIZE];
+	}
+	static asio::ip::udp::endpoint _endpoint;
+	using namespace std::placeholders;
+	net->socket->async_receive_from(
+			asio::buffer(_buffer, NetworkManager::PACKET_SIZE),
+			_endpoint, 0,
+			std::bind(&GameManager::game_handler, this, net, _1, _2));
 
+	if(bytes == 0){
+		return;
+	}
+
+	NetworkManager::Message m;
+	m.m = _buffer;
+	m.len = bytes;
+	update_gamestate(m);
 }
