@@ -61,9 +61,9 @@ void Bullet::del(){
 
 NetworkManager::Message Bullet::serialize(){
 	NetworkManager::Message m;
-	m.m = new char[BULLETDATA_SIZE];
+	m.m = std::shared_ptr<char>(new char[BULLETDATA_SIZE]);
 	m.len = BULLETDATA_SIZE;
-	char* data = m.m;
+	char* data = m.m.get();
 	memcpy(data, &id, sizeof(id));
 	data += sizeof(id);
 	memcpy(data, &xpos, sizeof(xpos));
@@ -77,7 +77,7 @@ void Bullet::unserialize(NetworkManager::Message m){
 		logError("Something has gone horribly wrong");
 		return;
 	}
-	char* data = m.m;
+	char* data = m.m.get();
 	uint32_t temp_id;
 	memcpy(&temp_id, data, sizeof(temp_id));
 	data += sizeof(temp_id);
@@ -89,6 +89,4 @@ void Bullet::unserialize(NetworkManager::Message m){
 	memcpy(&xpos, data, sizeof(xpos));
 	data += sizeof(xpos);
 	memcpy(&ypos, data, sizeof(ypos));
-
-	delete [] m.m;
 }

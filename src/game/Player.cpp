@@ -141,9 +141,9 @@ void Player::del(){
 
 NetworkManager::Message Player::serialize(){
 	NetworkManager::Message m;
-	m.m = new char[PLAYERDATA_SIZE];
+	m.m = std::shared_ptr<char>(new char[PLAYERDATA_SIZE]);
 	m.len = PLAYERDATA_SIZE;
-	char* data = m.m;
+	char* data = m.m.get();
 	memcpy(data, &id, sizeof(id));
 	data += sizeof(id);
 	memcpy(data, &xpos, sizeof(xpos));
@@ -157,17 +157,18 @@ void Player::unserialize(NetworkManager::Message m){
 		logError("Corrupted udp packet");
 		return;
 	}
-	uint32_t test_id = (m.m[0]<<24) | (m.m[1]<<16) | (m.m[2]<<8) | m.m[3];
+	char* data = m.m.get();
+
+	uint32_t test_id;
+	memcpy(&test_id, data, sizeof(uint32_t));
 	if(test_id != id){
 		logError("This is not the player you are looking for");
 	}
 
 	//Outline:
 	//		Store X and Y position (and thats it)
-	char* data = m.m + 4;
+	data += sizeof(test_id);
 	memcpy(&xpos, data, sizeof(xpos));
 	data += sizeof(xpos);
 	memcpy(&ypos, data, sizeof(ypos));
-
-	delete [] m.m;
 }

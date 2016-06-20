@@ -12,7 +12,7 @@
 class NetworkManager{
 	public:
 		struct Message{
-			char* m;
+			std::shared_ptr<char> m;
 			size_t len;
 		};
 		enum MODE{

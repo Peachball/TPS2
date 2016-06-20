@@ -35,6 +35,8 @@ class GameManager{
 		int status;
 		void setLocalPlayer(Player* p);
 
+		void game_handler(const asio::error_code& error, std::size_t bytes);
+
 		void broadcast_gamestate(NetworkManager* net);
 		void update_gamestate(NetworkManager::Message m);
 	private:

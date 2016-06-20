@@ -36,7 +36,7 @@ void NetworkManager::send_server_message(std::string message){
 }
 
 void NetworkManager::send_server_message(Message m){
-	send_server_message(m.m, m.len);
+	send_server_message(m.m.get(), m.len);
 }
 
 void NetworkManager::send_server_message(char* message, unsigned int len){
@@ -59,12 +59,11 @@ NetworkManager::Message NetworkManager::receive_server_message(){
 		logError("Currently running as server, not client");
 		return mes;
 	}
-	char buffer[PACKET_SIZE];
-	size_t len = socket->receive_from(asio::buffer(buffer), server_loc);
+	mes.m = std::shared_ptr<char>(new char[PACKET_SIZE]);
+	size_t len = socket->receive_from(asio::buffer(mes.m.get(), PACKET_SIZE), server_loc);
 
-	std::cout<<"Server sent:"<<buffer<<'\n';
+	std::cout<<"Server sent:"<<mes.m.get()<<'\n';
 
-	mes.m = buffer;
 	mes.len = len;
 	return mes;
 }
@@ -104,7 +103,7 @@ void NetworkManager::receive_client_message(){
 }
 
 void NetworkManager::broadCastMessage(Message m){
-	broadCastMessage(m.m, m.len);
+	broadCastMessage(m.m.get(), m.len);
 }
 
 void NetworkManager::broadCastMessage(char* message, unsigned int size){

@@ -132,7 +132,7 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 	//Convert 4 bytes to uint32
 	//Big endian
 	uint32_t temp_id = 0;
-	memcpy(&temp_id, m.m, sizeof(temp_id));
+	memcpy(&temp_id, m.m.get(), sizeof(temp_id));
 
 	//Linear search to find object with id
 	for(GameObject* g : objects){
@@ -141,4 +141,8 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 			break;
 		}
 	}
+}
+
+void GameManager::game_handler(const asio::error_code& error, std::size_t bytes){
+
 }
