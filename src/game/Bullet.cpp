@@ -31,6 +31,7 @@ void Bullet::display(){
 }
 
 void Bullet::gameUpdate(Uint32 time){
+	this->unserialize(this->serialize());
 	xpos += speed * time * cos(direction);
 	ypos += speed * time * sin(direction);
 }
@@ -60,8 +61,34 @@ void Bullet::del(){
 
 NetworkManager::Message Bullet::serialize(){
 	NetworkManager::Message m;
+	m.m = new char[BULLETDATA_SIZE];
+	m.len = BULLETDATA_SIZE;
+	char* data = m.m;
+	memcpy(data, &id, sizeof(id));
+	data += sizeof(id);
+	memcpy(data, &xpos, sizeof(xpos));
+	data += sizeof(xpos);
+	memcpy(data, &ypos, sizeof(ypos));
 	return m;
 }
 
 void Bullet::unserialize(NetworkManager::Message m){
+	if(m.len != BULLETDATA_SIZE){
+		logError("Something has gone horribly wrong");
+		return;
+	}
+	char* data = m.m;
+	uint32_t temp_id;
+	memcpy(&temp_id, data, sizeof(temp_id));
+	data += sizeof(temp_id);
+	if(temp_id != id){
+		logError("Id mismatch for bullet");
+		return;
+	}
+
+	memcpy(&xpos, data, sizeof(xpos));
+	data += sizeof(xpos);
+	memcpy(&ypos, data, sizeof(ypos));
+
+	delete [] m.m;
 }

@@ -21,6 +21,7 @@ class Bullet : public GameObject{
 		static void del();
 
 	private:
+		static const int BULLETDATA_SIZE=12;
 		static std::mutex imageLock;
 		static SDL_Texture *image;
 		static SDL_Surface* surface;

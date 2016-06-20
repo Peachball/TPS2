@@ -79,6 +79,7 @@ void Player::shoot(float direction){
 }
 
 void Player::gameUpdate(Uint32 time){
+	this->unserialize(this->serialize());
 	//Detect mouse button status
 	int x;
 	int y;
@@ -140,9 +141,33 @@ void Player::del(){
 
 NetworkManager::Message Player::serialize(){
 	NetworkManager::Message m;
+	m.m = new char[PLAYERDATA_SIZE];
+	m.len = PLAYERDATA_SIZE;
+	char* data = m.m;
+	memcpy(data, &id, sizeof(id));
+	data += sizeof(id);
+	memcpy(data, &xpos, sizeof(xpos));
+	data += sizeof(xpos);
+	memcpy(data, &ypos, sizeof(ypos));
 	return m;
 }
 
 void Player::unserialize(NetworkManager::Message m){
+	if(PLAYERDATA_SIZE != m.len){
+		logError("Corrupted udp packet");
+		return;
+	}
+	uint32_t test_id = (m.m[0]<<24) | (m.m[1]<<16) | (m.m[2]<<8) | m.m[3];
+	if(test_id != id){
+		logError("This is not the player you are looking for");
+	}
 
+	//Outline:
+	//		Store X and Y position (and thats it)
+	char* data = m.m + 4;
+	memcpy(&xpos, data, sizeof(xpos));
+	data += sizeof(xpos);
+	memcpy(&ypos, data, sizeof(ypos));
+
+	delete [] m.m;
 }

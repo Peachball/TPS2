@@ -1,6 +1,7 @@
 #ifndef _PLAYER_H
 #define _PLAYER_H
 #define _USE_MATH_DEFINES
+#include <string.h>
 #include <math.h>
 #include "game/GameObject.h"
 #include "Graphics.h"
@@ -24,6 +25,7 @@ class Player : public GameObject{
 		static void del();
 
 	private:
+		static const int PLAYERDATA_SIZE = 12;
 		static SDL_Texture *image;
 		static const std::string DEFAULT_NAME;
 		SDL_Rect src;

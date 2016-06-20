@@ -132,7 +132,7 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 	//Convert 4 bytes to uint32
 	//Big endian
 	uint32_t temp_id = 0;
-	temp_id = (m.m[0] << 24) | (m.m[1] << 16) | (m.m[2] << 8) |  (m.m[3]);
+	memcpy(&temp_id, m.m, sizeof(temp_id));
 
 	//Linear search to find object with id
 	for(GameObject* g : objects){
