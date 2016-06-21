@@ -162,6 +162,7 @@ void GameManager::broadcast_gamestate(NetworkManager* net){
 void GameManager::update_gamestate(NetworkManager::Message m){
 	if(m.len <= 4){
 		logError("Message is corrrupted");
+		std::cout<<"Message size: "<<m.len<<'\n';
 		return;
 	}
 	uint32_t temp_id = 0;
