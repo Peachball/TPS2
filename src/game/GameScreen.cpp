@@ -14,9 +14,7 @@ GameScreen::GameScreen(GAMEMODE mode){
 				manager.join_server(net);
 				manager.game_handler(net, asio::error_code(), 0);
 				net->startClientMessageThreads();
-				for(int i = 0; i < 100 && manager.localPlayer == NULL; i++){
-					manager.request_add_player(net);
-				}
+				net->request_add_client();
 			}
 			catch(std::exception &e){
 				std::cout<<e.what()<<'\n';
@@ -24,10 +22,8 @@ GameScreen::GameScreen(GAMEMODE mode){
 			break;
 		case MULTIPLAYER_SERVER:
 			{
-				/*
 				Player* p = new Player(&manager);
 				manager.setLocalPlayer(p);
-				*/
 				try{
 					net = new NetworkManager(NetworkManager::MODE::SERVER);
 					net->reset();
@@ -53,6 +49,11 @@ Screen* GameScreen::update(){
 
 	if(gm == MULTIPLAYER_SERVER){
 		manager.broadcast_gamestate(net);
+	}
+	if(gm == MULTIPLAYER_CLIENT){
+		if(manager.localPlayer == NULL){
+			manager.request_add_player(net);
+		}
 	}
 	if(manager.status == GameManager::State::END){
 		manager.endGame();

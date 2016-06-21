@@ -17,7 +17,8 @@ class Player;
 class GameManager{
 	public:
 		enum Command{
-			UPDATE, ADD_PLAYER, SET_PLAYER, GET_PLAYER
+			UPDATE, ADD_PLAYER, SET_PLAYER, GET_PLAYER, MOVE_LEFT, MOVE_RIGHT,
+			MOVE_UP, MOVE_DOWN
 		};
 		enum State{
 			BEFORE,

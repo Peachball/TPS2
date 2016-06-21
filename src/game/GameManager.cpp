@@ -4,8 +4,10 @@
 #include "game/Bullet.h"
 
 GameManager::GameManager(){
+	localPlayer = NULL;
 	__buffer = new char[NetworkManager::PACKET_SIZE];
 	curId = 1;
+	gameThread = NULL;
 }
 
 void GameManager::setLocalPlayer(int id){
@@ -23,8 +25,6 @@ void GameManager::setLocalPlayer(int id){
 			return;
 		}
 	}
-
-	//Player wasn't found in the list...
 }
 
 void GameManager::setLocalPlayer(Player* p){
@@ -61,14 +61,10 @@ GameManager::~GameManager(){
 }
 
 void GameManager::startGame(){
-
-	//Initalize debug mode stuff
-
 	//Debugging purposes only currently
 	status = GameManager::State::DURING;
 
-	gameThread   = new std::thread(&GameManager::manageGame, this);
-
+	gameThread = new std::thread(&GameManager::manageGame, this);
 }
 
 void GameManager::endGame(){
@@ -155,8 +151,7 @@ void GameManager::broadcast_gamestate(NetworkManager* net){
 		//buffer+2 because 2 bytes are for headers
 		NetworkManager::Message m = g->serialize(buffer+HEADER_SIZE);
 		m.m = buffer;
-		NetworkManager::Message gen_m = g->serialize(buffer);
-		m.len = HEADER_SIZE + gen_m.len;
+		m.len += HEADER_SIZE;
 		net->broadcastMessage(m);
 	}
 
@@ -169,8 +164,6 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 		logError("Message is corrrupted");
 		return;
 	}
-	m.m += HEADER_SIZE;
-	m.len -= HEADER_SIZE;
 	uint32_t temp_id = 0;
 	memcpy(&temp_id, m.m, sizeof(temp_id));
 
@@ -192,6 +185,7 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 				p->id = temp_id;
 				p->unserialize(m);
 				addObject(p);
+				std::cout<<"Id: "<<temp_id<<'\n';
 				logError("Adding player");
 			}
 			break;
@@ -218,14 +212,14 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 			asio::buffer(__buffer, NetworkManager::PACKET_SIZE),
 			remote, 0,
 			std::bind(&GameManager::game_handler, this, net, _1, _2));
-	if(bytes == 0){
+	if(bytes <= 2){
 		return;
 	}
 	if(__buffer[0] != NetworkManager::GAME_COMMUNICATE){
 		return;
 	}
 
-	NetworkManager::Message m;
+	NetworkManager::Message m; //This message has been edited
 	m.m = __buffer + HEADER_SIZE; //First byte is network stuff, 2 byte is game header
 	m.len = bytes - HEADER_SIZE; //Cuz I added 2 above
 
@@ -235,7 +229,6 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 				update_gamestate(m);
 				break;
 			case SET_PLAYER:
-				logError("Setting player");
 				int id;
 				memcpy(&id, __buffer+HEADER_SIZE, sizeof(id));
 				setLocalPlayer(id);
@@ -245,23 +238,29 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 	if(net->mode == NetworkManager::SERVER){
 		switch(__buffer[1]){
 			case ADD_PLAYER:
+				if(client_players.find(remote) == client_players.end())
 				{
+					//Make and Add the player
 					Player* p = new Player(this);
 					p->unserialize(m);
 					p->id = curId++;
 					addObject(p);
+					client_players.insert(
+							std::pair<asio::ip::udp::endpoint, int>
+							(remote, p->id));
+				}
+				{
+					uint32_t id = client_players[remote];
+					//Send the player informtation back
 					NetworkManager::Message response;
 					response.m = new char[NetworkManager::PACKET_SIZE];
 					
 					//2 because there are 2 headers ("GAMECOMM and SET_PLAYER
 					//4 because the id is 4 bytes long
-					response.len = HEADER_SIZE + sizeof(p->id);
-					client_players.insert(
-							std::pair<asio::ip::udp::endpoint, int>
-							(remote, p->id));
+					response.len = HEADER_SIZE + 4;
 					response.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
 					response.m[1] = (char) SET_PLAYER;
-					memcpy(response.m + HEADER_SIZE, &(p->id), sizeof(p->id));
+					memcpy(response.m + HEADER_SIZE, &(id), sizeof(id));
 					net->send_client_message(response, remote);
 					delete [] response.m;
 					response.m = NULL;

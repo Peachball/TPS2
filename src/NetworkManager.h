@@ -63,6 +63,7 @@ class NetworkManager{
 		void send_server_message(Message m);
 		void send_server_message(char* message, unsigned int len);
 		Message receive_server_message(char* buffer);
+		void request_add_client();
 
 		static const int PACKET_SIZE;
 		static const std::string SERVICE_NAME;

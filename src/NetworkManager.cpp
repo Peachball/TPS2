@@ -46,10 +46,7 @@ void NetworkManager::send_server_message(char* message, unsigned int len){
 	if(socket == NULL){
 		logError("Socket was not initialized");
 	}
-	std::cout<<"Sending server message: "<<message<<'\n';
-	std::cout<<"Server address: "<<server_loc.address()<<'\n';
 	socket->send_to(asio::buffer(message, len), server_loc);
-	std::cout<<"Sent!\n";
 }
 
 NetworkManager::Message NetworkManager::receive_server_message(char* buffer){
@@ -120,6 +117,16 @@ void NetworkManager::broadcastMessage(char* message, unsigned int size){
 		asio::error_code error;
 		socket->send_to(asio::buffer(message, size), e, 0, error);
 	}
+}
+
+void NetworkManager::request_add_client(){
+	Message m;
+	m.m = new char[1];
+	m.len = 1;
+	m.m[0] = REQ_CONNECT;
+	send_server_message(m);
+	delete [] m.m;
+	m.m = NULL;
 }
 
 void yelp(const asio::error_code& error, std::size_t bytes){
