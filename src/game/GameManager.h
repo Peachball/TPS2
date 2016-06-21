@@ -61,6 +61,9 @@ class GameManager{
 		std::list<GameObject*> objects;
 
 		const int HEADER_SIZE=2;
+
+		char* __buffer;
+		asio::ip::udp::endpoint remote;
 };
 
 #endif

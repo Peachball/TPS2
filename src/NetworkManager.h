@@ -71,7 +71,6 @@ class NetworkManager{
 
 		asio::ip::udp::socket* socket;
 		void listen();
-
 		void reset();
 
 	private:

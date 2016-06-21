@@ -4,6 +4,7 @@
 #include "game/Bullet.h"
 
 GameManager::GameManager(){
+	__buffer = new char[NetworkManager::PACKET_SIZE];
 	curId = 1;
 }
 
@@ -46,9 +47,15 @@ GameManager::~GameManager(){
 
 	if(gameThread != NULL){
 		delete gameThread;
+		gameThread = NULL;
 	}
 
 	gameThread = NULL;
+
+	if(__buffer != NULL){
+		delete [] __buffer;
+		__buffer = NULL;
+	}
 }
 
 void GameManager::startGame(){
@@ -196,33 +203,30 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 	}
 }
 
-void GameManager::game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes){
-	static char* _buffer;
-	logError("Loading game handler");
-	if(_buffer == NULL){
-		_buffer = new char[NetworkManager::PACKET_SIZE];
-	}
-	static asio::ip::udp::endpoint _endpoint;
+void GameManager::game_handler(NetworkManager* net, const asio::error_code& error,
+		std::size_t bytes){
 	using namespace std::placeholders;
+	logError("Loading game handler");
+
 	logError("Async adding");
 	net->socket->async_receive_from(
-			asio::buffer(_buffer, NetworkManager::PACKET_SIZE),
-			_endpoint, 0,
+			asio::buffer(__buffer, NetworkManager::PACKET_SIZE),
+			remote, 0,
 			std::bind(&GameManager::game_handler, this, net, _1, _2));
 	logError("Re added myself");
 	if(bytes == 0){
 		return;
 	}
-	if(_buffer[0] != NetworkManager::GAME_COMMUNICATE){
+	if(__buffer[0] != NetworkManager::GAME_COMMUNICATE){
 		return;
 	}
 
 	NetworkManager::Message m;
-	m.m = _buffer + HEADER_SIZE; //First byte is network stuff, 2 byte is game header
+	m.m = __buffer + HEADER_SIZE; //First byte is network stuff, 2 byte is game header
 	m.len = bytes - HEADER_SIZE; //Cuz I added 2 above
 
 	if(net->mode == NetworkManager::CLIENT){
-		switch(_buffer[1]){
+		switch(__buffer[1]){
 			case UPDATE:
 				logError("Updating gamestate");
 				update_gamestate(m);
@@ -230,13 +234,13 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 			case SET_PLAYER:
 				logError("Setting player");
 				int id;
-				memcpy(&id, _buffer+HEADER_SIZE, sizeof(id));
+				memcpy(&id, __buffer+HEADER_SIZE, sizeof(id));
 				setLocalPlayer(id);
 				break;
 		}
 	}
 	if(net->mode == NetworkManager::SERVER){
-		switch(_buffer[1]){
+		switch(__buffer[1]){
 			case ADD_PLAYER:
 				{
 					logError("add player request received");
@@ -252,19 +256,19 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 					response.len = HEADER_SIZE + sizeof(p->id);
 					client_players.insert(
 							std::pair<asio::ip::udp::endpoint, int>
-							(_endpoint, p->id));
+							(remote, p->id));
 					response.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
 					response.m[1] = (char) SET_PLAYER;
 					memcpy(response.m + HEADER_SIZE, &(p->id), sizeof(p->id));
-					net->send_client_message(response, _endpoint);
+					net->send_client_message(response, remote);
 					delete [] response.m;
 					response.m = NULL;
 				}
 				break;
 			case GET_PLAYER:
 				int playerid = 0;
-				if(client_players.count(_endpoint) > 0){
-					playerid = client_players[_endpoint];
+				if(client_players.count(remote) > 0){
+					playerid = client_players[remote];
 				}
 				else{
 					break;
@@ -278,7 +282,7 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 				mes.len = HEADER_SIZE + sizeof(playerid);
 
 				memcpy(mes.m + HEADER_SIZE, &(playerid), sizeof(playerid));
-				net->send_client_message(mes, _endpoint);
+				net->send_client_message(mes, remote);
 				delete [] mes.m;
 				mes.m = NULL;
 				break;
