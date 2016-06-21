@@ -5,6 +5,7 @@
 #include <list>
 #include <thread>
 #include <memory>
+#include <map>
 
 #include "NetworkManager.h"
 #include "Graphics.h"
@@ -15,6 +16,9 @@ class Player;
 
 class GameManager{
 	public:
+		enum Command{
+			UPDATE, ADD_PLAYER, SET_PLAYER, GET_PLAYER
+		};
 		enum State{
 			BEFORE,
 			DURING,
@@ -25,6 +29,7 @@ class GameManager{
 		GameManager();
 		~GameManager();
 
+		//Start game, as in start rendering/do game logic
 		void startGame();
 		void endGame();
 
@@ -33,23 +38,26 @@ class GameManager{
 
 		void handleEvents();
 
-		int status;
+		//Server commands
+		State status;
 		void setLocalPlayer(Player* p);
+		void setLocalPlayer(int id);
+		void broadcast_gamestate(NetworkManager* net);
+		int curId;
+		std::map<asio::ip::udp::endpoint, int> client_players;
 
+		//Client commands
+		void update_gamestate(NetworkManager::Message m);
+		void request_add_player(NetworkManager* net);
 		void game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes);
 
-		void broadcast_gamestate(NetworkManager* net);
-		void update_gamestate(NetworkManager::Message m);
-	private:
-		int curId;
-		std::list<GameObject*> objects;
 
+	private:
 		void render();
 		void manageGame();
-
 		std::thread* gameThread;
-
 		Player* localPlayer;
+		std::list<GameObject*> objects;
 };
 
 #endif

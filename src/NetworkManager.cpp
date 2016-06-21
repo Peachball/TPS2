@@ -27,7 +27,6 @@ void NetworkManager::connect_to_server(std::string hostname){
 	udp::resolver::query query(udp::v4(), hostname, SERVICE_NAME);
 	server_loc = *resolver.resolve(query);
 	socket = new udp::socket(io_service);
-
 	socket->open(udp::v4());
 }
 
@@ -102,6 +101,16 @@ void NetworkManager::receive_client_message(){
 	}
 }
 
+void NetworkManager::send_client_message(NetworkManager::Message m, udp::endpoint client){
+	send_client_message(m.m, m.len, client);
+}
+
+void NetworkManager::send_client_message(char* message, unsigned int len,
+		udp::endpoint client){
+	asio::error_code error;
+	socket->send_to(asio::buffer(message, len), client, 0, error);
+}
+
 void NetworkManager::broadcastMessage(Message m){
 	broadcastMessage(m.m, m.len);
 }
@@ -117,11 +126,28 @@ void yelp(const asio::error_code& error, std::size_t bytes){
 	std::cout<<"Yelp!\n";
 }
 
+char NetworkManager::get_header(Message m){
+	return m.m[0];
+}
+
 void NetworkManager::handleMessages(const asio::error_code &error,
 		std::size_t bytes){
-	std::cout<<"Message: "<<std::string(_buffer, bytes)<<"\n";
-	std::cout<<"Address Location: "<<_endpoint.address()<<'\n';
-	add_client(_endpoint);
+	Message m = {_buffer, bytes};
+	if(mode == SERVER){
+		//Originally planned to have more udp network actions, but there the
+		//server really doesn't do much
+		switch(get_header(m)){
+			case REQ_CONNECT:
+				add_client(_endpoint);
+				break;
+			case DISCONNECT:
+				rem_client(_endpoint);
+				break;
+		}
+	}
+	if(mode == CLIENT){
+		//Client does less atm
+	}
 	listen();
 }
 
@@ -152,6 +178,10 @@ void NetworkManager::add_client(udp::endpoint e){
 	}
 	//If e is not already added
 	clients.push_back(e);
+}
+
+void NetworkManager::rem_client(udp::endpoint e){
+	clients.remove(e);
 }
 
 void NetworkManager::reset(){

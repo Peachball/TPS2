@@ -7,6 +7,23 @@ GameManager::GameManager(){
 	curId = 1;
 }
 
+void GameManager::setLocalPlayer(int id){
+	if(localPlayer != NULL){
+	if(localPlayer->id == id){
+		return;
+	}
+	}
+	for(GameObject* g : objects){
+		if(g->id == id){
+			localPlayer = static_cast<Player*>(g);
+			if(localPlayer == NULL){
+				logError("That was not a player...welp we gon crash now");
+			}
+			return;
+		}
+	}
+}
+
 void GameManager::setLocalPlayer(Player* p){
 	if(localPlayer != NULL){
 		localPlayer->localPlayer = false;
@@ -170,6 +187,10 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 }
 
 void GameManager::game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes){
+	if(net->mode == NetworkManager::SERVER){
+		logError("This handler should not be used for servers...");
+		return;
+	}
 	static char* _buffer;
 	if(_buffer == NULL){
 		_buffer = new char[NetworkManager::PACKET_SIZE];
@@ -181,12 +202,95 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 			_endpoint, 0,
 			std::bind(&GameManager::game_handler, this, net, _1, _2));
 
+	if(_buffer[0] != NetworkManager::GAME_COMMUNICATE){
+		return;
+	}
 	if(bytes == 0){
 		return;
 	}
 
 	NetworkManager::Message m;
-	m.m = _buffer;
-	m.len = bytes;
-	update_gamestate(m);
+	m.m = _buffer + 2; //First byte is network stuff, 2 byte is game header
+	m.len = bytes - 2; //Cuz I added 2 above
+
+	if(net->mode == NetworkManager::CLIENT){
+		switch(_buffer[1]){
+			case UPDATE:
+				update_gamestate(m);
+				break;
+			case SET_PLAYER:
+				int id;
+				memcpy(&id, _buffer+1, sizeof(id));
+				setLocalPlayer(id);
+				break;
+		}
+	}
+	if(net->mode == NetworkManager::SERVER){
+		switch(_buffer[1]){
+			case ADD_PLAYER:
+				{
+					Player* p = new Player(this);
+					p->unserialize(m);
+					p->id = curId++;
+					addObject(p);
+					NetworkManager::Message response;
+					response.m = new char[NetworkManager::PACKET_SIZE];
+					
+					//2 because there are 2 headers ("GAMECOMM and SET_PLAYER
+					//4 because the id is 4 bytes long
+					response.len = 2 + 4;
+					client_players.insert(
+							std::pair<asio::ip::udp::endpoint, int>
+							(_endpoint, p->id));
+					response.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
+					response.m[1] = (char) SET_PLAYER;
+					memcpy(response.m + 2, &(p->id), sizeof(p->id));
+					net->send_client_message(response, _endpoint);
+					delete [] response.m;
+					response.m = NULL;
+				}
+				break;
+			case GET_PLAYER:
+				int playerid = 0;
+				if(client_players.count(_endpoint) > 0){
+					playerid = client_players[_endpoint];
+				}
+				else{
+					break;
+				}
+				NetworkManager::Message mes;
+				mes.m = new char[NetworkManager::PACKET_SIZE];
+				mes.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
+				mes.m[1] = (char) SET_PLAYER;
+
+				//Headers are 2 bytes, id is 4 bytes
+				mes.len = 2 + 4;
+
+				memcpy(mes.m + 2, &(playerid), sizeof(playerid));
+				net->send_client_message(mes, _endpoint);
+				delete [] mes.m;
+				mes.m = NULL;
+				break;
+		}
+	}
+}
+
+void GameManager::request_add_player(NetworkManager* net){
+	if(net->mode == NetworkManager::SERVER){
+		logError("Adding player is not a server function");
+		return;
+	}
+	NetworkManager::Message m;
+	m.m = new char[NetworkManager::PACKET_SIZE];
+
+	m.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
+	m.m[1] = (char) ADD_PLAYER;
+
+	//2 bytes for the headers (nothing else)
+	m.len = 2;
+
+	net->send_server_message(m);
+
+	delete [] m.m;
+	m.m = NULL;
 }

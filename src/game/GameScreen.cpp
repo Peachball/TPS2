@@ -9,11 +9,12 @@ GameScreen::GameScreen(GAMEMODE mode){
 		case MULTIPLAYER_CLIENT:
 			try{
 				net = new NetworkManager(NetworkManager::MODE::CLIENT);
-				net->connect_to_server("localhost");
+				net->connect_to_server("192.168.0.207");
 				net->send_server_message("add me plox");
 				net->reset();
 				manager.game_handler(net, asio::error_code(), 0);
 				net->startClientMessageThreads();
+				manager.request_add_player(net);
 			}
 			catch(std::exception &e){
 				std::cout<<e.what()<<'\n';
@@ -21,8 +22,10 @@ GameScreen::GameScreen(GAMEMODE mode){
 			break;
 		case MULTIPLAYER_SERVER:
 			{
+				/*
 				Player* p = new Player(&manager);
 				manager.setLocalPlayer(p);
+				*/
 				try{
 					net = new NetworkManager(NetworkManager::MODE::SERVER);
 					net->create_local_server(2000);

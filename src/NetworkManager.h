@@ -23,6 +23,19 @@ class NetworkManager{
 			char* m;
 			size_t len;
 		};
+
+		//Possible network commands between server/client
+		enum Command{
+			DISCONNECT,
+			//Client continuously sends this in intervals, if not recieved,
+			//client is assumed to have dced
+			HEARTBEAT,
+			GAME_COMMUNICATE,
+
+			//Connect as in connect to the game, not for the socket stuff
+			REQ_CONNECT,
+			ACCEPT_CONNECT
+		};
 		enum MODE{
 			SERVER, CLIENT
 		};
@@ -38,6 +51,10 @@ class NetworkManager{
 		void receive_client_message();
 		void startClientMessageThreads();
 		void add_client(asio::ip::udp::endpoint e);
+		void rem_client(asio::ip::udp::endpoint e);
+		void send_client_message(Message m, asio::ip::udp::endpoint client);
+		void send_client_message(char* message, unsigned int len,
+				asio::ip::udp::endpoint client);
 
 
 		//Client stuff
@@ -58,15 +75,16 @@ class NetworkManager{
 		void reset();
 
 	private:
+		//Update all async tasks
 		void poll_handlers();
 		std::thread* listenThread;
 		bool threadState = false;
 
 		char* _buffer;
 
-
-		//Debugging purposes only
+		//Handle connection stuff (ignore game connect stuff)
 		void handleMessages(const asio::error_code& error, std::size_t bytes);
+		char get_header(Message m);
 
 
 		//Server variables
