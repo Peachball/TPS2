@@ -54,6 +54,9 @@ Screen* GameScreen::update(){
 		if(manager.localPlayer == NULL){
 			manager.request_add_player(net);
 		}
+		else{
+			manager.send_server_player_input(net);
+		}
 	}
 	if(manager.status == GameManager::State::END){
 		manager.endGame();

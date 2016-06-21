@@ -99,10 +99,10 @@ void GameManager::manageGame(){
 
 void GameManager::handleEvents(){
 	SDL_Event event;
+	if(localPlayer != NULL){
+		localPlayer->getInput();
+	}
 	while(SDL_PollEvent(&event)){
-		if(localPlayer != NULL){
-			localPlayer->getInput(&event);
-		}
 
 		switch(event.type){
 			case SDL_WINDOWEVENT:
@@ -267,25 +267,50 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 				}
 				break;
 			case GET_PLAYER:
-				int playerid = 0;
-				if(client_players.count(remote) > 0){
-					playerid = client_players[remote];
-				}
-				else{
-					break;
-				}
-				NetworkManager::Message mes;
-				mes.m = new char[NetworkManager::PACKET_SIZE];
-				mes.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
-				mes.m[1] = (char) SET_PLAYER;
+				{
+					int playerid = 0;
+					if(client_players.count(remote) > 0){
+						playerid = client_players[remote];
+					}
+					else{
+						break;
+					}
+					NetworkManager::Message mes;
+					mes.m = new char[NetworkManager::PACKET_SIZE];
+					mes.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
+					mes.m[1] = (char) SET_PLAYER;
 
-				//Headers are 2 bytes, id is 4 bytes
-				mes.len = HEADER_SIZE + sizeof(playerid);
+					//Headers are 2 bytes, id is 4 bytes
+					mes.len = HEADER_SIZE + sizeof(playerid);
 
-				memcpy(mes.m + HEADER_SIZE, &(playerid), sizeof(playerid));
-				net->send_client_message(mes, remote);
-				delete [] mes.m;
-				mes.m = NULL;
+					memcpy(mes.m + HEADER_SIZE, &(playerid), sizeof(playerid));
+					net->send_client_message(mes, remote);
+					delete [] mes.m;
+					mes.m = NULL;
+				}
+				break;
+
+			//Assume that it's a player command
+			case SET_PLAYER_INPUT:
+				{
+					Player* p = NULL;
+					//Find the guy (Probably should move away from this at some
+					//point
+					int id = client_players[remote];
+					for(GameObject* g : objects){
+						if(g->id == id){
+							p = static_cast<Player*>(g);
+							break;
+						}
+					}
+
+					if(p == NULL){
+						logError("Not a player...");
+						break;
+					}
+
+					p->getInput(m);
+				}
 				break;
 		}
 	}
@@ -325,4 +350,26 @@ void GameManager::join_server(NetworkManager* net){
 
 	delete [] join_mes.m;
 	join_mes.m = NULL;
+}
+
+void GameManager::send_server_player_input(NetworkManager* net){
+	if(net->socket == NULL){
+		logError("Bruh");
+		return;
+	}
+	if(localPlayer == NULL){
+		logError("No local player found");
+	}
+	NetworkManager::Message m;
+	m.m = new char[NetworkManager::PACKET_SIZE];
+	m.len = HEADER_SIZE;
+	m.m[0] = NetworkManager::GAME_COMMUNICATE;
+	m.m[1] = GameManager::SET_PLAYER_INPUT;
+	NetworkManager::Message inp = localPlayer->serializeInput(m.m+HEADER_SIZE);
+	m.len += inp.len;
+
+	net->send_server_message(m);
+
+	delete [] m.m;
+	m.m = NULL;
 }

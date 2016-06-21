@@ -11,10 +11,15 @@
 
 class Player : public GameObject{
 	public:
+		enum PlayerKeys{
+			UP, DOWN, RIGHT, LEFT, SHOOT_BUTTON
+		};
 		Player(GameManager* m, float x=400, float y=400);
 		virtual void display();
 		virtual ~Player();
-		void getInput(const SDL_Event* event);
+		void getInput();
+		void getInput(NetworkManager::Message m);
+		NetworkManager::Message serializeInput(char* loc);
 
 		virtual void gameUpdate(Uint32 time);
 
@@ -25,7 +30,9 @@ class Player : public GameObject{
 		static void del();
 		bool localPlayer=false;
 
+		static const int KEYS=100;
 		static const int PLAYERDATA_SIZE = 13;
+		static const int PLAYER_INPUT_SIZE = KEYS + 8; //Data consists of keys, and 2 ints
 	private:
 		static SDL_Texture *image;
 		static const std::string DEFAULT_NAME;
@@ -33,6 +40,9 @@ class Player : public GameObject{
 		SDL_Rect dest;
 
 		bool* keystate;
+		int mouse_x;
+		int mouse_y;
+
 
 		float xpos;
 		float ypos;

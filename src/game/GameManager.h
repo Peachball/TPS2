@@ -17,8 +17,8 @@ class Player;
 class GameManager{
 	public:
 		enum Command{
-			UPDATE, ADD_PLAYER, SET_PLAYER, GET_PLAYER, MOVE_LEFT, MOVE_RIGHT,
-			MOVE_UP, MOVE_DOWN
+			//These are overarching game commands
+			UPDATE, ADD_PLAYER, SET_PLAYER, GET_PLAYER, SET_PLAYER_INPUT
 		};
 		enum State{
 			BEFORE,
@@ -53,6 +53,7 @@ class GameManager{
 		void game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes);
 		void join_server(NetworkManager* net);
 		Player* localPlayer;
+		void send_server_player_input(NetworkManager* net);
 
 
 	private:

@@ -16,7 +16,7 @@ Player::Player(GameManager* m, float x, float y) : GameObject(m){
 	dest = src;
 	dest.x = 100;
 
-	keystate = new bool[300];
+	keystate = new bool[KEYS];
 }
 
 void Player::display(){
@@ -28,43 +28,18 @@ void Player::display(){
 	}
 }
 
-void Player::getInput(const SDL_Event* event){
-
-	switch(event->type){
-		case SDL_KEYDOWN:
-			switch(event->key.keysym.sym){
-				case SDLK_DOWN:
-					keystate[SDL_SCANCODE_DOWN] = true;
-					break;
-				case SDLK_UP:
-					keystate[SDL_SCANCODE_UP] = true;
-					break;
-				case SDLK_RIGHT:
-					keystate[SDL_SCANCODE_RIGHT] = true;
-					break;
-				case SDLK_LEFT:
-					keystate[SDL_SCANCODE_LEFT] = true;
-					break;
-			}
-			break;
-
-		case SDL_KEYUP:
-			switch(event->key.keysym.sym){
-				case SDLK_DOWN:
-					keystate[SDL_SCANCODE_DOWN] = false;
-					break;
-				case SDLK_UP:
-					keystate[SDL_SCANCODE_UP] = false;
-					break;
-				case SDLK_RIGHT:
-					keystate[SDL_SCANCODE_RIGHT] = false;
-					break;
-				case SDLK_LEFT:
-					keystate[SDL_SCANCODE_LEFT] = false;
-					break;
-			}
-
-			break;
+void Player::getInput(){
+	int numkeys;
+	const Uint8* key = SDL_GetKeyboardState(&numkeys);
+	keystate[DOWN] = key[SDL_SCANCODE_DOWN];
+	keystate[RIGHT] = key[SDL_SCANCODE_RIGHT];
+	keystate[LEFT] = key[SDL_SCANCODE_LEFT];
+	keystate[UP] = key[SDL_SCANCODE_UP];
+	if(SDL_GetMouseState(&mouse_x, &mouse_y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
+		keystate[SHOOT_BUTTON] = true;
+	}
+	else{
+		keystate[SHOOT_BUTTON] = false;
 	}
 }
 
@@ -79,22 +54,17 @@ void Player::shoot(float direction){
 }
 
 void Player::gameUpdate(Uint32 time){
-	if(!localPlayer){
-		return;
-	}
-	//Detect mouse button status
-	int x;
-	int y;
-	if(SDL_GetMouseState(&x, &y) & SDL_BUTTON(SDL_BUTTON_LEFT)){
+
+	if(keystate[SHOOT_BUTTON]){
 		float correction = 0;
-		if(xpos - x > 0){
+		if(xpos - mouse_x > 0){
 			correction = M_PI;
 		}
-		shoot(atan((ypos - y) / (xpos - x)) + correction);
+		shoot(atan((ypos - mouse_y) / (xpos - mouse_x)) + correction);
 	}
 
-	float relx = x - xpos;
-	float rely = y - ypos;
+	float relx = mouse_x - xpos;
+	float rely = mouse_y - ypos;
 	//Right side
 	if(relx > abs(rely)){
 		src.y = src.h * 3;
@@ -114,16 +84,16 @@ void Player::gameUpdate(Uint32 time){
 	if(rely > abs(relx)){
 		src.y = src.h * 0;
 	}
-	if(keystate[SDL_SCANCODE_DOWN]){
+	if(keystate[DOWN]){
 		ypos += movementSpeed * time;
 	}
-	if(keystate[SDL_SCANCODE_UP]){
+	if(keystate[UP]){
 		ypos -= movementSpeed * time;
 	}
-	if(keystate[SDL_SCANCODE_LEFT]){
+	if(keystate[LEFT]){
 		xpos -= movementSpeed * time;
 	}
-	if(keystate[SDL_SCANCODE_RIGHT]){
+	if(keystate[RIGHT]){
 		xpos += movementSpeed * time;
 	}
 }
@@ -185,4 +155,33 @@ void Player::unserialize(NetworkManager::Message m){
 	memcpy(&xpos, data, sizeof(xpos));
 	data += sizeof(xpos);
 	memcpy(&ypos, data, sizeof(ypos));
+}
+
+void Player::getInput(NetworkManager::Message m){
+	if(m.len != PLAYER_INPUT_SIZE){
+		logError("Data size is incorrect for player...");
+		return;
+	}
+
+	char* data = m.m;
+
+	memcpy(keystate, data, KEYS);
+	data += KEYS;
+	memcpy(&mouse_x, data, sizeof(uint32_t));
+	data += sizeof(uint32_t);
+	memcpy(&mouse_y, data, sizeof(uint32_t));
+}
+
+NetworkManager::Message Player::serializeInput(char* loc){
+	NetworkManager::Message m;
+	m.m = loc;
+	char* data = loc;
+	memcpy((data), keystate, KEYS);
+	data += KEYS;
+	memcpy(data, &mouse_x, sizeof(mouse_x));
+	data += sizeof(mouse_x);
+	memcpy(data, &mouse_y, sizeof(mouse_y));
+	
+	m.len = PLAYER_INPUT_SIZE;
+	return m;
 }
