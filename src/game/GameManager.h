@@ -50,6 +50,7 @@ class GameManager{
 		void update_gamestate(NetworkManager::Message m);
 		void request_add_player(NetworkManager* net);
 		void game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes);
+		void join_server(NetworkManager* net);
 
 
 	private:
@@ -58,6 +59,8 @@ class GameManager{
 		std::thread* gameThread;
 		Player* localPlayer;
 		std::list<GameObject*> objects;
+
+		const int HEADER_SIZE=2;
 };
 
 #endif

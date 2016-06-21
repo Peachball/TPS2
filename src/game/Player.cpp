@@ -160,6 +160,7 @@ NetworkManager::Message Player::serialize(char* buffer){
 void Player::unserialize(NetworkManager::Message m){
 	if(PLAYERDATA_SIZE != m.len){
 		logError("Corrupted udp packet");
+		std::cout<<"Packet size was: "<<m.len<<'\n';
 		return;
 	}
 	char* data = m.m;

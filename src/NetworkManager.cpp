@@ -166,6 +166,7 @@ void NetworkManager::poll_handlers(){
 
 void NetworkManager::startClientMessageThreads(){
 	threadState = true;
+	listen();
 	listenThread = new std::thread(&NetworkManager::poll_handlers, this);
 }
 

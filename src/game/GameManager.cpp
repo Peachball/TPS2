@@ -139,7 +139,14 @@ void GameManager::broadcast_gamestate(NetworkManager* net){
 		logError("manager is not in correct mode lol");
 		return;
 	}
+	buffer[0] = (char) NetworkManager::GAME_COMMUNICATE;
+	buffer[1] = (char) UPDATE;
 	for(GameObject* g : objects){
+
+		//buffer+2 because 2 bytes are for headers
+		NetworkManager::Message m = g->serialize(buffer+HEADER_SIZE);
+		m.m = buffer;
+		m.len += HEADER_SIZE;
 		net->broadcastMessage(g->serialize(buffer));
 	}
 
@@ -152,6 +159,9 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 		logError("Message is corrrupted");
 		return;
 	}
+	std::cout<<m.len<<" = Message Length...\n";
+	m.m += HEADER_SIZE;
+	m.len -= HEADER_SIZE;
 	uint32_t temp_id = 0;
 	memcpy(&temp_id, m.m, sizeof(temp_id));
 
@@ -187,40 +197,40 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 }
 
 void GameManager::game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes){
-	if(net->mode == NetworkManager::SERVER){
-		logError("This handler should not be used for servers...");
-		return;
-	}
 	static char* _buffer;
+	logError("Loading game handler");
 	if(_buffer == NULL){
 		_buffer = new char[NetworkManager::PACKET_SIZE];
 	}
 	static asio::ip::udp::endpoint _endpoint;
 	using namespace std::placeholders;
+	logError("Async adding");
 	net->socket->async_receive_from(
 			asio::buffer(_buffer, NetworkManager::PACKET_SIZE),
 			_endpoint, 0,
 			std::bind(&GameManager::game_handler, this, net, _1, _2));
-
-	if(_buffer[0] != NetworkManager::GAME_COMMUNICATE){
+	logError("Re added myself");
+	if(bytes == 0){
 		return;
 	}
-	if(bytes == 0){
+	if(_buffer[0] != NetworkManager::GAME_COMMUNICATE){
 		return;
 	}
 
 	NetworkManager::Message m;
-	m.m = _buffer + 2; //First byte is network stuff, 2 byte is game header
-	m.len = bytes - 2; //Cuz I added 2 above
+	m.m = _buffer + HEADER_SIZE; //First byte is network stuff, 2 byte is game header
+	m.len = bytes - HEADER_SIZE; //Cuz I added 2 above
 
 	if(net->mode == NetworkManager::CLIENT){
 		switch(_buffer[1]){
 			case UPDATE:
+				logError("Updating gamestate");
 				update_gamestate(m);
 				break;
 			case SET_PLAYER:
+				logError("Setting player");
 				int id;
-				memcpy(&id, _buffer+1, sizeof(id));
+				memcpy(&id, _buffer+HEADER_SIZE, sizeof(id));
 				setLocalPlayer(id);
 				break;
 		}
@@ -229,6 +239,7 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 		switch(_buffer[1]){
 			case ADD_PLAYER:
 				{
+					logError("add player request received");
 					Player* p = new Player(this);
 					p->unserialize(m);
 					p->id = curId++;
@@ -238,13 +249,13 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 					
 					//2 because there are 2 headers ("GAMECOMM and SET_PLAYER
 					//4 because the id is 4 bytes long
-					response.len = 2 + 4;
+					response.len = HEADER_SIZE + sizeof(p->id);
 					client_players.insert(
 							std::pair<asio::ip::udp::endpoint, int>
 							(_endpoint, p->id));
 					response.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
 					response.m[1] = (char) SET_PLAYER;
-					memcpy(response.m + 2, &(p->id), sizeof(p->id));
+					memcpy(response.m + HEADER_SIZE, &(p->id), sizeof(p->id));
 					net->send_client_message(response, _endpoint);
 					delete [] response.m;
 					response.m = NULL;
@@ -264,9 +275,9 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 				mes.m[1] = (char) SET_PLAYER;
 
 				//Headers are 2 bytes, id is 4 bytes
-				mes.len = 2 + 4;
+				mes.len = HEADER_SIZE + sizeof(playerid);
 
-				memcpy(mes.m + 2, &(playerid), sizeof(playerid));
+				memcpy(mes.m + HEADER_SIZE, &(playerid), sizeof(playerid));
 				net->send_client_message(mes, _endpoint);
 				delete [] mes.m;
 				mes.m = NULL;
@@ -287,10 +298,23 @@ void GameManager::request_add_player(NetworkManager* net){
 	m.m[1] = (char) ADD_PLAYER;
 
 	//2 bytes for the headers (nothing else)
-	m.len = 2;
+	m.len = HEADER_SIZE;
 
 	net->send_server_message(m);
 
 	delete [] m.m;
 	m.m = NULL;
+}
+
+void GameManager::join_server(NetworkManager* net){
+	logError("Joining server");
+	NetworkManager::Message join_mes;
+	join_mes.m = new char[NetworkManager::PACKET_SIZE];
+	join_mes.len = 1;
+	join_mes.m[0] = (char) NetworkManager::REQ_CONNECT;
+
+	net->send_server_message(join_mes);
+
+	delete [] join_mes.m;
+	join_mes.m = NULL;
 }
