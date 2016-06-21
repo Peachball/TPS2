@@ -51,13 +51,13 @@ class GameManager{
 		void request_add_player(NetworkManager* net);
 		void game_handler(NetworkManager* net, const asio::error_code& error, std::size_t bytes);
 		void join_server(NetworkManager* net);
+		Player* localPlayer;
 
 
 	private:
 		void render();
 		void manageGame();
 		std::thread* gameThread;
-		Player* localPlayer;
 		std::list<GameObject*> objects;
 
 		const int HEADER_SIZE=2;

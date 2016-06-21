@@ -25,8 +25,8 @@ class Player : public GameObject{
 		static void del();
 		bool localPlayer=false;
 
-	private:
 		static const int PLAYERDATA_SIZE = 13;
+	private:
 		static SDL_Texture *image;
 		static const std::string DEFAULT_NAME;
 		SDL_Rect src;

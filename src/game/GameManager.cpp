@@ -23,6 +23,8 @@ void GameManager::setLocalPlayer(int id){
 			return;
 		}
 	}
+
+	//Player wasn't found in the list...
 }
 
 void GameManager::setLocalPlayer(Player* p){
@@ -153,8 +155,9 @@ void GameManager::broadcast_gamestate(NetworkManager* net){
 		//buffer+2 because 2 bytes are for headers
 		NetworkManager::Message m = g->serialize(buffer+HEADER_SIZE);
 		m.m = buffer;
-		m.len += HEADER_SIZE;
-		net->broadcastMessage(g->serialize(buffer));
+		NetworkManager::Message gen_m = g->serialize(buffer);
+		m.len = HEADER_SIZE + gen_m.len;
+		net->broadcastMessage(m);
 	}
 
 	delete [] buffer;
@@ -166,7 +169,6 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 		logError("Message is corrrupted");
 		return;
 	}
-	std::cout<<m.len<<" = Message Length...\n";
 	m.m += HEADER_SIZE;
 	m.len -= HEADER_SIZE;
 	uint32_t temp_id = 0;
@@ -190,6 +192,7 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 				p->id = temp_id;
 				p->unserialize(m);
 				addObject(p);
+				logError("Adding player");
 			}
 			break;
 		case BULLET:
@@ -205,15 +208,16 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 
 void GameManager::game_handler(NetworkManager* net, const asio::error_code& error,
 		std::size_t bytes){
+	if(net->socket == NULL){
+		logError("nothing has been initialized bro");
+		return;
+	}
 	using namespace std::placeholders;
-	logError("Loading game handler");
 
-	logError("Async adding");
 	net->socket->async_receive_from(
 			asio::buffer(__buffer, NetworkManager::PACKET_SIZE),
 			remote, 0,
 			std::bind(&GameManager::game_handler, this, net, _1, _2));
-	logError("Re added myself");
 	if(bytes == 0){
 		return;
 	}
@@ -228,7 +232,6 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 	if(net->mode == NetworkManager::CLIENT){
 		switch(__buffer[1]){
 			case UPDATE:
-				logError("Updating gamestate");
 				update_gamestate(m);
 				break;
 			case SET_PLAYER:
@@ -243,7 +246,6 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 		switch(__buffer[1]){
 			case ADD_PLAYER:
 				{
-					logError("add player request received");
 					Player* p = new Player(this);
 					p->unserialize(m);
 					p->id = curId++;
@@ -301,8 +303,11 @@ void GameManager::request_add_player(NetworkManager* net){
 	m.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
 	m.m[1] = (char) ADD_PLAYER;
 
-	//2 bytes for the headers (nothing else)
-	m.len = HEADER_SIZE;
+	Player* p = new Player(this);
+	p->serialize(m.m + HEADER_SIZE);
+
+	//2 bytes for the headers, more bytes for players
+	m.len = HEADER_SIZE + Player::PLAYERDATA_SIZE;
 
 	net->send_server_message(m);
 
