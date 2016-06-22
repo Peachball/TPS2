@@ -16,7 +16,10 @@ Player::Player(GameManager* m, float x, float y) : GameObject(m){
 	dest = src;
 	dest.x = 100;
 
-	keystate = new bool[KEYS];
+	keystate = new bool[KEYS]();
+
+	mouse_x = 0;
+	mouse_y = 0;
 }
 
 void Player::display(){
@@ -54,7 +57,6 @@ void Player::shoot(float direction){
 }
 
 void Player::gameUpdate(Uint32 time){
-
 	if(keystate[SHOOT_BUTTON]){
 		float correction = 0;
 		if(xpos - mouse_x > 0){
