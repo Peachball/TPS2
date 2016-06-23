@@ -10,6 +10,7 @@ GameScreen::GameScreen(GAMEMODE mode){
 			try{
 				net = new NetworkManager(NetworkManager::MODE::CLIENT);
 				net->connect_to_server("localhost");
+				asio::ip::udp::endpoint a, b;
 				net->reset();
 				manager.join_server(net);
 				manager.game_handler(net, asio::error_code(), 0);
@@ -52,7 +53,7 @@ Screen* GameScreen::update(){
 	}
 	if(gm == MULTIPLAYER_CLIENT){
 		if(manager.localPlayer == NULL){
-			//manager.request_add_player(net);
+			manager.request_add_player(net);
 		}
 		else{
 			manager.send_server_player_input(net);

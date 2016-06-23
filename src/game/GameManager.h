@@ -45,7 +45,11 @@ class GameManager{
 		void setLocalPlayer(int id);
 		void broadcast_gamestate(NetworkManager* net);
 		int curId;
-		std::map<asio::ip::udp::endpoint, int> client_players;
+		struct EndpointComparator{
+			bool operator()(const asio::ip::udp::endpoint& e1,
+					const asio::ip::udp::endpoint& e2) const;
+		};
+		std::map<asio::ip::udp::endpoint, int, EndpointComparator> client_players;
 
 		//Client commands
 		void update_gamestate(NetworkManager::Message m);
@@ -54,6 +58,7 @@ class GameManager{
 		void join_server(NetworkManager* net);
 		Player* localPlayer;
 		void send_server_player_input(NetworkManager* net);
+		void set_player_input(int id, NetworkManager::Message m);
 
 
 	private:
@@ -66,6 +71,7 @@ class GameManager{
 
 		char* __buffer;
 		asio::ip::udp::endpoint remote;
+		inline GameObject* get_object(int id);
 };
 
 #endif

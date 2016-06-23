@@ -10,20 +10,20 @@ GameManager::GameManager(){
 	gameThread = NULL;
 }
 
+bool GameManager::EndpointComparator::operator()(const asio::ip::udp::endpoint& e1,
+		const asio::ip::udp::endpoint& e2) const {
+	return e1.address().to_string().compare(e2.address().to_string()) > 0;
+}
+
 void GameManager::setLocalPlayer(int id){
 	if(localPlayer != NULL){
 	if(localPlayer->id == id){
 		return;
 	}
 	}
-	for(GameObject* g : objects){
-		if(g->id == id){
-			localPlayer = static_cast<Player*>(g);
-			if(localPlayer == NULL){
-				logError("That was not a player...welp we gon crash now");
-			}
-			return;
-		}
+	localPlayer = static_cast<Player*>(get_object(id));
+	if(localPlayer == NULL){
+		logError("Local player not found rip");
 	}
 }
 
@@ -38,6 +38,24 @@ void GameManager::setLocalPlayer(Player* p){
 		p->id = curId++;
 		objects.push_back(p);
 	}
+}
+
+inline GameObject* GameManager::get_object(int id){
+	for(GameObject* g : objects){
+		if(g->id == id){
+			return g;
+		}
+	}
+	return NULL;
+}
+
+void GameManager::set_player_input(int id, NetworkManager::Message m){
+	Player* p = static_cast<Player*>(get_object(id));
+	if(p == NULL){
+		logError("Player not found to set input");
+	}
+
+	p->getInput(m);
 }
 
 GameManager::~GameManager(){
@@ -165,6 +183,7 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 		std::cout<<"Message size: "<<m.len<<'\n';
 		return;
 	}
+	logError("Gamestate updated");
 	uint32_t temp_id = 0;
 	memcpy(&temp_id, m.m, sizeof(temp_id));
 
@@ -230,9 +249,18 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 				update_gamestate(m);
 				break;
 			case SET_PLAYER:
-				int id;
-				memcpy(&id, __buffer+HEADER_SIZE, sizeof(id));
-				setLocalPlayer(id);
+				{
+					int id;
+					memcpy(&id, __buffer+HEADER_SIZE, sizeof(id));
+					setLocalPlayer(id);
+				}
+				break;
+			case SET_PLAYER_INPUT:
+				{
+					int id;
+					memcpy(&id, __buffer+HEADER_SIZE, sizeof(id));
+					set_player_input(id, m);
+				}
 				break;
 		}
 	}
@@ -241,6 +269,12 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 			case ADD_PLAYER:
 				if(client_players.find(remote) == client_players.end())
 				{
+					if(client_players.size() != 0){
+						std::cout<<"Address 1: "<<remote.address()<<'\n';
+						std::cout<<"Address 2: "<<client_players.begin()->first.address()<<'\n';
+						std::cout<<(remote==client_players.begin()->first)<<'\n';
+					}
+					logError("Adding Player");
 					//Make and Add the player
 					Player* p = new Player(this);
 					p->unserialize(m);
@@ -251,6 +285,7 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 							(remote, p->id));
 				}
 				{
+					//Respond to request
 					uint32_t id = client_players[remote];
 					//Send the player informtation back
 					NetworkManager::Message response;
@@ -269,6 +304,8 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 				break;
 			case GET_PLAYER:
 				{
+					logError("Someone's callin a deprecated method...");
+					//Deprecated (should not be called)
 					int playerid = 0;
 					if(client_players.count(remote) > 0){
 						playerid = client_players[remote];

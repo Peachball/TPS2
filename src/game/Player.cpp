@@ -162,6 +162,7 @@ void Player::unserialize(NetworkManager::Message m){
 void Player::getInput(NetworkManager::Message m){
 	if(m.len != PLAYER_INPUT_SIZE){
 		logError("Data size is incorrect for player...");
+		std::cout<<"Data size was: "<<m.len<<'\n';
 		return;
 	}
 
