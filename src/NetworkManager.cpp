@@ -38,7 +38,7 @@ void NetworkManager::send_server_message(Message m){
 	send_server_message(m.m, m.len);
 }
 
-void NetworkManager::send_server_message(char* message, unsigned int len){
+void NetworkManager::send_server_message(char* message, int len){
 	if(mode == SERVER){
 		logError("Currently running as server, not client");
 		return;
@@ -102,7 +102,7 @@ void NetworkManager::send_client_message(NetworkManager::Message m, udp::endpoin
 	send_client_message(m.m, m.len, client);
 }
 
-void NetworkManager::send_client_message(char* message, unsigned int len,
+void NetworkManager::send_client_message(char* message, int len,
 		udp::endpoint client){
 	asio::error_code error;
 	socket->send_to(asio::buffer(message, len), client, 0, error);
@@ -112,7 +112,7 @@ void NetworkManager::broadcastMessage(Message m){
 	broadcastMessage(m.m, m.len);
 }
 
-void NetworkManager::broadcastMessage(char* message, unsigned int size){
+void NetworkManager::broadcastMessage(char* message, int size){
 	for(udp::endpoint e : clients){
 		asio::error_code error;
 		socket->send_to(asio::buffer(message, size), e, 0, error);

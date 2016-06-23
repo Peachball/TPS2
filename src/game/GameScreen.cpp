@@ -52,7 +52,7 @@ Screen* GameScreen::update(){
 	}
 	if(gm == MULTIPLAYER_CLIENT){
 		if(manager.localPlayer == NULL){
-			manager.request_add_player(net);
+			//manager.request_add_player(net);
 		}
 		else{
 			manager.send_server_player_input(net);

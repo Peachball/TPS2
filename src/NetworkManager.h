@@ -46,14 +46,14 @@ class NetworkManager{
 		//Server stuff
 		void create_local_server(int port);
 		void broadcastMessage(Message m);
-		void broadcastMessage(char* message, unsigned int len);
+		void broadcastMessage(char* message, int len);
 		//Warning: blocks thread
 		void receive_client_message();
 		void startClientMessageThreads();
 		void add_client(asio::ip::udp::endpoint e);
 		void rem_client(asio::ip::udp::endpoint e);
 		void send_client_message(Message m, asio::ip::udp::endpoint client);
-		void send_client_message(char* message, unsigned int len,
+		void send_client_message(char* message, int len,
 				asio::ip::udp::endpoint client);
 
 
@@ -61,7 +61,7 @@ class NetworkManager{
 		void connect_to_server(std::string hostname);
 		void send_server_message(std::string message);
 		void send_server_message(Message m);
-		void send_server_message(char* message, unsigned int len);
+		void send_server_message(char* message, int len);
 		Message receive_server_message(char* buffer);
 		void request_add_client();
 

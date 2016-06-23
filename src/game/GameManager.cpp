@@ -328,8 +328,8 @@ void GameManager::request_add_player(NetworkManager* net){
 	m.m[0] = (char) NetworkManager::GAME_COMMUNICATE;
 	m.m[1] = (char) ADD_PLAYER;
 
-	Player* p = new Player(this);
-	p->serialize(m.m + HEADER_SIZE);
+	Player p(this);
+	p.serialize(m.m + HEADER_SIZE);
 
 	//2 bytes for the headers, more bytes for players
 	m.len = HEADER_SIZE + Player::PLAYERDATA_SIZE;
