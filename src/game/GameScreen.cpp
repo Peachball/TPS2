@@ -10,9 +10,7 @@ GameScreen::GameScreen(GAMEMODE mode){
 			try{
 				net = new NetworkManager(NetworkManager::MODE::CLIENT);
 				net->connect_to_server("localhost");
-				asio::ip::udp::endpoint a, b;
 				net->reset();
-				manager.join_server(net);
 				manager.game_handler(net, asio::error_code(), 0);
 				net->startClientMessageThreads();
 				net->request_add_client();

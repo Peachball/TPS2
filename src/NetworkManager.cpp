@@ -114,6 +114,7 @@ void NetworkManager::broadcastMessage(Message m){
 
 void NetworkManager::broadcastMessage(char* message, int size){
 	for(udp::endpoint e : clients){
+		logError("gamestate broadcasted");
 		asio::error_code error;
 		socket->send_to(asio::buffer(message, size), e, 0, error);
 	}
@@ -124,7 +125,9 @@ void NetworkManager::request_add_client(){
 	m.m = new char[1];
 	m.len = 1;
 	m.m[0] = REQ_CONNECT;
-	send_server_message(m);
+	while(!connected_to_server){
+		send_server_message(m);
+	}
 	delete [] m.m;
 	m.m = NULL;
 }
@@ -146,6 +149,17 @@ void NetworkManager::handleMessages(const asio::error_code &error,
 		switch(get_header(m)){
 			case REQ_CONNECT:
 				add_client(_endpoint);
+
+				{
+					//Respond to connection request
+					Message m;
+					m.m = new char[1];
+					m.len = 1;
+					m.m[0] = ACCEPT_CONNECT;
+					send_client_message(m, _endpoint);
+
+					delete [] m.m;
+				}
 				break;
 			case DISCONNECT:
 				rem_client(_endpoint);
@@ -154,6 +168,11 @@ void NetworkManager::handleMessages(const asio::error_code &error,
 	}
 	if(mode == CLIENT){
 		//Client does less atm
+		switch(get_header(m)){
+			case ACCEPT_CONNECT:
+				connected_to_server = true;
+				break;
+		}
 	}
 	listen();
 }

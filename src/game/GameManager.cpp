@@ -23,7 +23,7 @@ void GameManager::setLocalPlayer(int id){
 	}
 	localPlayer = static_cast<Player*>(get_object(id));
 	if(localPlayer == NULL){
-		logError("Local player not found rip");
+	//	logError("Local player not found rip");
 	}
 }
 
@@ -170,6 +170,9 @@ void GameManager::broadcast_gamestate(NetworkManager* net){
 		NetworkManager::Message m = g->serialize(buffer+HEADER_SIZE);
 		m.m = buffer;
 		m.len += HEADER_SIZE;
+		if(m.len == HEADER_SIZE + 4){
+
+		}
 		net->broadcastMessage(m);
 	}
 
@@ -183,7 +186,6 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 		std::cout<<"Message size: "<<m.len<<'\n';
 		return;
 	}
-	logError("Gamestate updated");
 	uint32_t temp_id = 0;
 	memcpy(&temp_id, m.m, sizeof(temp_id));
 
@@ -232,10 +234,11 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 			asio::buffer(__buffer, NetworkManager::PACKET_SIZE),
 			remote, 0,
 			std::bind(&GameManager::game_handler, this, net, _1, _2));
-	if(bytes <= 2){
+
+	if(__buffer[0] != NetworkManager::GAME_COMMUNICATE){
 		return;
 	}
-	if(__buffer[0] != NetworkManager::GAME_COMMUNICATE){
+	if(bytes <= 2){
 		return;
 	}
 
@@ -246,6 +249,7 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 	if(net->mode == NetworkManager::CLIENT){
 		switch(__buffer[1]){
 			case UPDATE:
+				std::cout<<"Update was called too\n";
 				update_gamestate(m);
 				break;
 			case SET_PLAYER:
@@ -267,13 +271,7 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 	if(net->mode == NetworkManager::SERVER){
 		switch(__buffer[1]){
 			case ADD_PLAYER:
-				if(client_players.find(remote) == client_players.end())
-				{
-					if(client_players.size() != 0){
-						std::cout<<"Address 1: "<<remote.address()<<'\n';
-						std::cout<<"Address 2: "<<client_players.begin()->first.address()<<'\n';
-						std::cout<<(remote==client_players.begin()->first)<<'\n';
-					}
+				if(client_players.find(remote) == client_players.end()) {
 					logError("Adding Player");
 					//Make and Add the player
 					Player* p = new Player(this);

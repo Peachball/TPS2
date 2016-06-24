@@ -32,7 +32,7 @@ class NetworkManager{
 			HEARTBEAT,
 			GAME_COMMUNICATE,
 
-			//Connect as in connect to the game, not for the socket stuff
+			//Connect as in connect into the broadcast loop, not for the socket stuff
 			REQ_CONNECT,
 			ACCEPT_CONNECT
 		};
@@ -79,6 +79,7 @@ class NetworkManager{
 		void poll_handlers();
 		std::thread* listenThread;
 		bool threadState = false;
+		bool connected_to_server = false;
 
 		char* _buffer;
 
