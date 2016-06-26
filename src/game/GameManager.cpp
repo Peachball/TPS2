@@ -5,7 +5,7 @@
 
 GameManager::GameManager(){
 	localPlayer = NULL;
-	__buffer = new char[NetworkManager::PACKET_SIZE];
+	__buffer = new char[NetworkManager::PACKET_SIZE]();
 	curId = 1;
 	gameThread = NULL;
 }
@@ -166,12 +166,11 @@ void GameManager::broadcast_gamestate(NetworkManager* net){
 	buffer[1] = (char) UPDATE;
 	for(GameObject* g : objects){
 
-		//buffer+2 because 2 bytes are for headers
 		NetworkManager::Message m = g->serialize(buffer+HEADER_SIZE);
 		m.m = buffer;
 		m.len += HEADER_SIZE;
 		if(m.len == HEADER_SIZE + 4){
-
+			logError("wtf");
 		}
 		net->broadcastMessage(m);
 	}
@@ -249,7 +248,9 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 	if(net->mode == NetworkManager::CLIENT){
 		switch(__buffer[1]){
 			case UPDATE:
-				std::cout<<"Update was called too\n";
+				if(bytes <= HEADER_SIZE + 4){
+					logError("m incorrect");
+				}
 				update_gamestate(m);
 				break;
 			case SET_PLAYER:
@@ -403,6 +404,9 @@ void GameManager::send_server_player_input(NetworkManager* net){
 	m.m[1] = GameManager::SET_PLAYER_INPUT;
 	NetworkManager::Message inp = localPlayer->serializeInput(m.m+HEADER_SIZE);
 	m.len += inp.len;
+	if(inp.len <= 50){
+		logError("Input size incorrect wtf");
+	}
 
 	net->send_server_message(m);
 

@@ -9,3 +9,5 @@ Makefile
 TPS2
 cmake_install.cmake
 compile_commands.json
+.vimrc
+tags

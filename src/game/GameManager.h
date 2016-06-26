@@ -49,7 +49,7 @@ class GameManager{
 			bool operator()(const asio::ip::udp::endpoint& e1,
 					const asio::ip::udp::endpoint& e2) const;
 		};
-		std::map<asio::ip::udp::endpoint, int, EndpointComparator> client_players;
+		std::map<asio::ip::udp::endpoint, int /*,EndpointComparator*/> client_players;
 
 		//Client commands
 		void update_gamestate(NetworkManager::Message m);

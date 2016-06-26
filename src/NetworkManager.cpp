@@ -114,7 +114,6 @@ void NetworkManager::broadcastMessage(Message m){
 
 void NetworkManager::broadcastMessage(char* message, int size){
 	for(udp::endpoint e : clients){
-		logError("gamestate broadcasted");
 		asio::error_code error;
 		socket->send_to(asio::buffer(message, size), e, 0, error);
 	}
@@ -198,11 +197,12 @@ void NetworkManager::startClientMessageThreads(){
 
 void NetworkManager::add_client(udp::endpoint e){
 	for(udp::endpoint cli : clients){
-		if(cli.address() == e.address()){
-			logError("Already added");
+		if(cli == e){
 			return;
 		}
 	}
+
+	logError("Client accepted");
 	//If e is not already added
 	clients.push_back(e);
 }
