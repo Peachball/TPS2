@@ -15,7 +15,7 @@ typedef unsigned __int64 uint64_t;
 #include "NetworkManager.h"
 
 enum GAMEOBJECTS{
-	PLAYER, BULLET
+	PLAYER, BULLET, SOLDIER76
 };
 
 class GameObject{

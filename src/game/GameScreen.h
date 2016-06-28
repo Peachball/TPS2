@@ -4,6 +4,7 @@
 #include "Screen.h"
 #include "NetworkManager.h"
 #include "Player.h"
+#include "game/Soldier76.h"
 
 enum GAMEMODE{
 	SINGLEPLAYER,

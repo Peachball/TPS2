@@ -2,6 +2,7 @@
 #include "game/GameObject.h"
 #include "game/Player.h"
 #include "game/Bullet.h"
+#include "game/Soldier76.h"
 
 GameManager::GameManager(){
 	localPlayer = NULL;
@@ -199,26 +200,27 @@ void GameManager::update_gamestate(NetworkManager::Message m){
 	//Generate the object because if wasn't found
 	char type;
 	memcpy(&type, m.m+sizeof(temp_id), sizeof(type));
+	GameObject* g;
 	switch(type){
 		case PLAYER:
-			{
-				Player *p = new Player(this);
-				p->id = temp_id;
-				p->unserialize(m);
-				addObject(p);
-				std::cout<<"Id: "<<temp_id<<'\n';
-				logError("Adding player");
-			}
+			g = new Player(this);
+			std::cout<<"Id: "<<temp_id<<'\n';
+			logError("Adding player");
 			break;
 		case BULLET:
-			{
-				Bullet* b = new Bullet(this);
-				b->id = temp_id;
-				b->unserialize(m);
-				addObject(b);
-			}
+			g = new Bullet(this);
+			break;
+		case SOLDIER76:
+			g = new Soldier76(this);
 			break;
 	}
+	if(g == NULL){
+		logError("Invalid type");
+		return;
+	}
+	g->id = temp_id;
+	g->unserialize(m);
+	addObject(g);
 }
 
 void GameManager::game_handler(NetworkManager* net, const asio::error_code& error,

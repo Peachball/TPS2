@@ -21,7 +21,7 @@ GameScreen::GameScreen(GAMEMODE mode){
 			break;
 		case MULTIPLAYER_SERVER:
 			{
-				Player* p = new Player(&manager);
+				Player* p = new Soldier76(&manager);
 				manager.setLocalPlayer(p);
 				try{
 					net = new NetworkManager(NetworkManager::MODE::SERVER);

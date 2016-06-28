@@ -33,21 +33,22 @@ class Player : public GameObject{
 		static const int KEYS=100;
 		static const int PLAYERDATA_SIZE = 13;
 		static const int PLAYER_INPUT_SIZE = KEYS + 8; //Data consists of keys, and 2 ints
-	private:
+
+	protected:
+		int hp;
+		float xpos;
+		float ypos;
 		static SDL_Texture *image;
-		static const std::string DEFAULT_NAME;
+		bool* keystate;
 		SDL_Rect src;
 		SDL_Rect dest;
 
-		bool* keystate;
 		int mouse_x;
 		int mouse_y;
+		float movementSpeed = 0.4;
 
-
-		float xpos;
-		float ypos;
-
-		float movementSpeed = 1;
+	private:
+		static const std::string DEFAULT_NAME;
 
 		void shoot(float direction);
 
