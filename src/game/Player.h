@@ -45,7 +45,7 @@ class Player : public GameObject{
 
 		int mouse_x;
 		int mouse_y;
-		float movementSpeed = 0.4;
+		float movementSpeed = 0.6;
 
 	private:
 		static const std::string DEFAULT_NAME;

@@ -26,6 +26,9 @@ class Bullet : public GameObject{
 		static SDL_Texture *image;
 		static SDL_Surface* surface;
 		static std::string IMAGE_LOC;
+		static const int BULLET_IMG_HEIGHT = 39;
+		static const int BULLET_IMG_WIDTH = 120;
+		static const float BULLET_SPEED;
 
 		SDL_Rect src;
 		SDL_Rect dest;

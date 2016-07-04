@@ -18,6 +18,15 @@ void Soldier76::display(){
 	if(SDL_RenderCopyEx(render, image, &src, &dest, 0, NULL, flip)){
 		logError();
 	}
+	displayUI();
+}
+
+void Soldier76::displayUI(){
+	//Display Health bar
+	{
+		SDL_Rect hbar = {
+		};
+	}
 }
 
 void Soldier76::gameUpdate(Uint32 time){
@@ -39,6 +48,17 @@ void Soldier76::gameUpdate(Uint32 time){
 	}
 	else{
 		flip = SDL_FLIP_NONE;
+	}
+
+	if(keystate[SHOOT_BUTTON]){
+		float direction = 0;
+		float correction = 0;
+		if(xpos - mouse_x > 0){
+			correction = M_PI;
+		}
+		direction = atan((ypos - mouse_y) / (xpos - mouse_x)) + correction;
+		Bullet* b = new Bullet(manager, xpos, ypos, direction);
+		manager->addObject(b);
 	}
 }
 

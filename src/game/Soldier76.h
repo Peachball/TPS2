@@ -13,6 +13,8 @@ class Soldier76 : public Player{
 
 		virtual NetworkManager::Message serialize(char* buffer);
 		virtual void unserialize(NetworkManager::Message m);
+
+		void displayUI();
 	private:
 
 		SDL_RendererFlip flip;
@@ -21,6 +23,8 @@ class Soldier76 : public Player{
 		static const std::string DEFAULT_NAME;
 		static const int IMG_HEIGHT=255;
 		static const int IMG_WIDTH=323;
+
+		//Health bar
 };
 
 

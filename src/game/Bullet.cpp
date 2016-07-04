@@ -4,6 +4,7 @@ SDL_Texture* Bullet::image = NULL;
 SDL_Surface* Bullet::surface = NULL;
 std::string Bullet::IMAGE_LOC = "bullet.png";
 std::mutex Bullet::imageLock;
+const float Bullet::BULLET_SPEED = 1.0f;
 
 Bullet::Bullet(GameManager* m, float x, float y, float direction): GameObject(m){
 	init();
@@ -11,9 +12,11 @@ Bullet::Bullet(GameManager* m, float x, float y, float direction): GameObject(m)
 	ypos = y;
 	src.x = 0;
 	src.y = 0;
-	src.w = 100;
-	src.h = 100;
-	speed = 0.1;
+	src.w = BULLET_IMG_WIDTH;
+	src.h = BULLET_IMG_HEIGHT;
+	dest.w = BULLET_IMG_WIDTH;
+	dest.h = BULLET_IMG_HEIGHT;
+	speed = BULLET_SPEED;
 	this->direction = direction;
 }
 
@@ -21,10 +24,9 @@ void Bullet::display(){
 	using namespace graphics;
 	dest.x = (int) xpos;
 	dest.y = (int) ypos;
-	dest.w = 100;
-	dest.h = 100;
 	imageLock.lock();
-	if(SDL_RenderCopy(render, image, &src, &dest) < 0){
+	if(SDL_RenderCopyEx(render, image, &src, &dest,
+				direction * 180 / M_PI, NULL, SDL_FLIP_NONE) < 0){
 		logError();
 	}
 	imageLock.unlock();
