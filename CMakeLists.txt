@@ -5,6 +5,7 @@ file(GLOB_RECURSE OBJS_SOURCE src/*.cpp)
 file(GLOB_RECURSE HEADER_FILES src/*.h)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 include_directories(src)
 include_directories(lib/include)
 
