@@ -8,13 +8,14 @@ Soldier76::Soldier76(GameManager* m, float x, float y): Player(m, x, y){
 	src.y = 0;
 	src.w = IMG_WIDTH;
 	src.h = IMG_HEIGHT;
+	flip = SDL_FLIP_NONE;
 }
 
 void Soldier76::display(){
 	using namespace graphics;
 	dest.x = (int) xpos;
 	dest.y = (int) ypos;
-	if(!SDL_RenderCopy(render, image, &src, &dest)){
+	if(SDL_RenderCopyEx(render, image, &src, &dest, 0, NULL, flip)){
 		logError();
 	}
 }
@@ -33,6 +34,12 @@ void Soldier76::gameUpdate(Uint32 time){
 		ypos -= movementSpeed*time;
 	}
 
+	if(mouse_x > xpos){
+		flip = SDL_FLIP_HORIZONTAL;
+	}
+	else{
+		flip = SDL_FLIP_NONE;
+	}
 }
 
 void Soldier76::init(){

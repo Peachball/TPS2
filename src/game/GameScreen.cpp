@@ -37,6 +37,8 @@ GameScreen::GameScreen(GAMEMODE mode){
 			}
 			break;
 		case TESTER:
+			Player* p = new Soldier76(&manager);
+			manager.setLocalPlayer(p);
 			break;
 	}
 

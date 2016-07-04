@@ -131,10 +131,6 @@ void NetworkManager::request_add_client(){
 	m.m = NULL;
 }
 
-void yelp(const asio::error_code& error, std::size_t bytes){
-	std::cout<<"Yelp!\n";
-}
-
 char NetworkManager::get_header(Message m){
 	return m.m[0];
 }

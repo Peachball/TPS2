@@ -15,6 +15,8 @@ class Soldier76 : public Player{
 		virtual void unserialize(NetworkManager::Message m);
 	private:
 
+		SDL_RendererFlip flip;
+
 		static const int SOLDATA_SIZE=0;
 		static const std::string DEFAULT_NAME;
 		static const int IMG_HEIGHT=255;
