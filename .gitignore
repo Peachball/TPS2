@@ -11,3 +11,5 @@ cmake_install.cmake
 compile_commands.json
 .vimrc
 tags
+*.o
+TPS2.dir/

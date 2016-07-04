@@ -1,6 +1,8 @@
 #include "game/Soldier76.h"
 
 const std::string Soldier76::DEFAULT_NAME="sol76.png";
+const int Soldier76::HP_DIST = 5;
+const int Soldier76::HP_HEIGHT = 20;
 
 Soldier76::Soldier76(GameManager* m, float x, float y): Player(m, x, y){
 	init();
@@ -13,8 +15,8 @@ Soldier76::Soldier76(GameManager* m, float x, float y): Player(m, x, y){
 
 void Soldier76::display(){
 	using namespace graphics;
-	dest.x = (int) xpos;
-	dest.y = (int) ypos;
+	dest.x = (int) xpos - dest.w / 2.0;
+	dest.y = (int) ypos - dest.h / 2.0;
 	if(SDL_RenderCopyEx(render, image, &src, &dest, 0, NULL, flip)){
 		logError();
 	}
@@ -25,7 +27,14 @@ void Soldier76::displayUI(){
 	//Display Health bar
 	{
 		SDL_Rect hbar = {
+			(int) dest.x,
+			(int) (dest.y - HP_DIST - HP_HEIGHT),
+			dest.w,
+			HP_HEIGHT
 		};
+		
+		SDL_SetRenderDrawColor(graphics::render, 0x7C, 0xFC, 0x00, 0xFF);
+		SDL_RenderFillRect(graphics::render, &hbar);
 	}
 }
 

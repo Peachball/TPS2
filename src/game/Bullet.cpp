@@ -22,8 +22,8 @@ Bullet::Bullet(GameManager* m, float x, float y, float direction): GameObject(m)
 
 void Bullet::display(){
 	using namespace graphics;
-	dest.x = (int) xpos;
-	dest.y = (int) ypos;
+	dest.x = (int) xpos - dest.w / 2.0;
+	dest.y = (int) ypos - dest.h / 2.0;
 	imageLock.lock();
 	if(SDL_RenderCopyEx(render, image, &src, &dest,
 				direction * 180 / M_PI, NULL, SDL_FLIP_NONE) < 0){

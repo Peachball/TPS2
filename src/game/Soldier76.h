@@ -19,12 +19,17 @@ class Soldier76 : public Player{
 
 		SDL_RendererFlip flip;
 
+		//Networking
 		static const int SOLDATA_SIZE=0;
+
+		//Sprite
 		static const std::string DEFAULT_NAME;
 		static const int IMG_HEIGHT=255;
 		static const int IMG_WIDTH=323;
 
 		//Health bar
+		static const int HP_HEIGHT;
+		static const int HP_DIST;
 };
 
 
