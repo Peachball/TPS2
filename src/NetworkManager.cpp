@@ -114,8 +114,13 @@ void NetworkManager::broadcastMessage(Message m){
 
 void NetworkManager::broadcastMessage(char* message, int size){
 	for(udp::endpoint e : clients){
-		asio::error_code error;
-		socket->send_to(asio::buffer(message, size), e, 0, error);
+		try{
+			asio::error_code error;
+			socket->send_to(asio::buffer(message, size), e, 0, error);
+		}
+		catch(std::exception& e){
+			std::cerr<<e.what()<<'\n';
+		}
 	}
 }
 

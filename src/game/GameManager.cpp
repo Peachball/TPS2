@@ -169,7 +169,7 @@ void GameManager::broadcast_gamestate(NetworkManager* net){
 		NetworkManager::Message m = g->serialize(buffer+HEADER_SIZE);
 		m.m = buffer;
 		m.len += HEADER_SIZE;
-		if(m.len == HEADER_SIZE + 4){
+		if(m.len <= HEADER_SIZE + 4){
 			logError("wtf");
 		}
 		net->broadcastMessage(m);
@@ -250,6 +250,10 @@ void GameManager::game_handler(NetworkManager* net, const asio::error_code& erro
 			case UPDATE:
 				if(bytes <= HEADER_SIZE + 4){
 					logError("m incorrect");
+					for(int i = 0; i < bytes; i++){
+						std::cout<<(int)__buffer[i];
+					}
+					std::cout<<'\n';
 				}
 				update_gamestate(m);
 				break;
