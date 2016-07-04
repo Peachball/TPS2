@@ -163,6 +163,7 @@ void Player::getInput(NetworkManager::Message m){
 	if(m.len != PLAYER_INPUT_SIZE){
 		logError("Data size is incorrect for player...");
 		std::cout<<"Data size was: "<<m.len<<'\n';
+		std::cout<<"Data content: "<<std::string(m.m, m.len)<<'\n';
 		return;
 	}
 
