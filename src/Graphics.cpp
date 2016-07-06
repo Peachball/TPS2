@@ -130,4 +130,14 @@ namespace graphics{
 	void logError(){
 		std::cout<<"SDL Error: "<< SDL_GetError()<<'\n';
 	}
+
+	void drawSquare(float x, float y, float size){
+		SDL_Rect s;
+		s.x = (int) (x - (size / 2.0));
+		s.y = (int) (y - (size / 2.0));
+		s.w = (int) size;
+		s.h = (int) size;
+
+		SDL_RenderFillRect(render, &s);
+	}
 }

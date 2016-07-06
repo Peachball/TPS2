@@ -1,6 +1,7 @@
 #ifndef _SOLDIER76_H
 #define _SOLDIER76_H
 #include "game/Player.h"
+#include "game/RectangleHitbox.h"
 
 class Soldier76 : public Player{
 	public:
@@ -17,12 +18,11 @@ class Soldier76 : public Player{
 		void displayUI();
 	private:
 
-		SDL_RendererFlip flip;
-
 		//Networking
 		static const int SOLDATA_SIZE=0;
 
 		//Sprite
+		SDL_RendererFlip flip;
 		static const std::string DEFAULT_NAME;
 		static const int IMG_HEIGHT=255;
 		static const int IMG_WIDTH=323;
@@ -30,6 +30,8 @@ class Soldier76 : public Player{
 		//Health bar
 		static const int HP_HEIGHT;
 		static const int HP_DIST;
+		RectangleHitbox hbox;
+
 };
 
 

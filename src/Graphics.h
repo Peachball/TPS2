@@ -27,6 +27,9 @@ namespace graphics{
 	extern SDL_Renderer* render;
 
 	void logError();
+
+	//Debugging only
+	void drawSquare(float x, float y, float size=10);
 }
 
 #endif
