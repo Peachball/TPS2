@@ -1,6 +1,7 @@
 #ifndef _RECTANGLEHITBOX_H
 #define _RECTANGLEHITBOX_H
 #include <math.h>
+#include <limits>
 
 #include "Graphics.h"
 #include "game/Hitbox.h"
@@ -35,6 +36,13 @@ class RectangleHitbox : public Hitbox{
 
 	private:
 		void updatePointArray();
+
+		//Intersection code
+		static void projectRectangleBox(RectangleHitbox* r, Vector ax,
+				float* min_out, float* max_out);
+		inline bool intersect(float min1, float max1,
+				float min2, float max2);
+		void getAxes(Vector* v);
 };
 
 #endif
